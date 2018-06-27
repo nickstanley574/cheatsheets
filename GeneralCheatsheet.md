@@ -60,7 +60,6 @@ List the status of all known peers  ` $ gluster peer status`
 
 ## Puppet
 
-
 Puppet programs are called manifests. Manifests are composed of puppet code and their filenames use the `.pp` extension. The default main manifest in Puppet installed via apt is `/etc/puppet/manifests/site.pp` ([digitalocean.com](https://www.digitalocean.com/community/tutorials/getting-started-with-puppet-code-manifests-and-modules)).
 
 `init.pp` is the 'main' class for a module. `site.pp` is where you define site specific configuration/properties ([ask.puppet.com](https://ask.puppet.com/question/29853/difference-between-initpp-and-sitepp-and-does-each-override-other-in-case-of-same-setting-mentioned-in-the-two-files/)).
@@ -170,7 +169,7 @@ Display information about physical volumes - `$ pvs`
 
 ### I/O
 
-####iostat
+#### iostat
 
 The iostat command stands for input-output statistics. This command is used to generate input-output statistics for device, partitions the network file system, generate the report for Central Processing Unit (CPU) ([linuxnix.com](https://www.linuxnix.com/15-iostat-command-examples-linux-unix/)).
 
@@ -593,8 +592,6 @@ Fail2ban attempts to alleviate these issues by providing an automated way of not
 * ["How Fail2Ban Works to Protect Services on a Linux Server" - digitalocean.com  ](https://www.digitalocean.com/community/tutorials/how-fail2ban-works-to-protect-services-on-a-linux-server)
 * [How To Protect SSH with Fail2Ban on Ubuntu 14.04 - digitalocean.com ](https://www.digitalocean.com/community/tutorials/how-to-protect-ssh-with-fail2ban-on-ubuntu-14-04)
 
-
-
 ### VIM (Vi IMproved)
 
 **Block Comment Out**
@@ -740,7 +737,6 @@ sys	0m3.355s
 * **User** is the amount of CPU time spent in user-mode code (outside the kernel) within the process. This is only actual CPU time used in executing the process. Other processes and time the process spends blocked do not count towards this figure.
 * **Sys** is the amount of CPU time spent in the kernel within the process. This means executing CPU time spent in system calls within the kernel, as opposed to library code, which is still running in user-space. Like 'user', this is only CPU time used by the process. See below for a brief description of kernel mode (also known as 'supervisor' mode) and the system call mechanism.
 
-
 ## Networking Overview
 *Default Gateway* - The device that passes traffic from the local subnet to devices on other subnets.
 
@@ -813,11 +809,9 @@ Usage: smbd [OPTION...]
 
 
 ## Shells
-
 At its base, a shell is simply a macro processor that executes commands. The term macro processor means functionality where text and symbols are expanded to create larger expressions. A Unix shell is both a command interpreter and a programming language. As a command interpreter, the shell provides the user interface to the rich set of GNU utilities. The programming language features allow these utilities to be combined. Files containing commands can be created, and become commands themselves. These new commands have the same status as system commands in directories such as /bin, allowing users or groups to establish custom environments to automate their common tasks ([gnu.org](https://www.gnu.org/software/bash/manual/html_node/What-is-a-shell_003f.html#What-is-a-shell_003f)).
 
 ### Bash
-
 Bash is the shell, or command language interpreter, for the GNU operating system. The name is an acronym for the ‘Bourne-Again SHell’, a pun on Stephen Bourne, the author of the direct ancestor of the current Unix shell sh, which appeared in the Seventh Edition Bell Labs Research version of Unix ([gnu.org](https://www.gnu.org/software/bash/manual/html_node/What-is-a-shell_003f.html#What-is-a-shell_003f)).
 
 To execute a script file with the bash executable found in the PATH environment variable by using the executable env, the first line of a script file must indicate the absolute path to the env executable with the argument bash: `#!/usr/bin/env bash` ([books.goalkicker.com](http://books.goalkicker.com/BashBook/))
