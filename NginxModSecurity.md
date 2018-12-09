@@ -1,6 +1,5 @@
 # [MODSECURITY 3.0 & NGINX: Quick Start Guide](https://www.nginx.com/resources/library/modsecurity-3-nginx-quick-start-guide)
 ### by Faisal Memon, Owen Garrett, and Michael Pleshakov
-### © NGINX, Inc 2018
 
 ## Preface 
 
