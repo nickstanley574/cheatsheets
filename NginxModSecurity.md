@@ -65,7 +65,7 @@ The CRS uses a configurable anomaly-scoring model Each rule that fires increases
 
 By default the CRS blocks all inbound traffic with an anomaly score of **5** or higher This means any critical rule that fires causes the transaction to be dropped Three or more Notice-level violations also lead to the transaction being blocked. 
 
-### 4 Installing the Trustwave SpiderLabs Commercial Rule Set 
+## 4 Installing the Trustwave SpiderLabs Commercial Rule Set 
 
 You must purchase the Trustwave SpiderLabs Rules directly from Trustwave
 
