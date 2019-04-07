@@ -573,6 +573,136 @@ For example, the expression 2 + 2 * 7 evaluates to 16, not 28, because the * ope
 - (all letters)
 - (all assignment operators)
 
+## Chapter 7 Built-in Control Structures
+
+The only control structures are `if`,`while`, `for`, `try`, `match`, and function calls. 
+
+### 7.1 IF EXPRESSIONS
+
+```
+var filename = "default.txt"
+if (!args.isEmpty)
+    filename = args(0)
+
+val filename =
+    if (!args.isEmpty) args(0)
+    else "default.txt"
+```
+
+### 7.2 WHILE LOOPS
+```
+var a = x
+var b = y
+while (a != 0) {
+  val temp = a a=b%a
+  b = temp
+}
+```
+
+### 7.3 FOR EXPRESSIONS
+
+#### Iteration through collections
+```
+val filesHere = (new java.io.File(".")).listFiles
+for (file <- filesHere)
+   println(file)
+```
+With the "file <- filesHere" syntax, which is called a generator, we iterate through the elements
+of filesHere. In each iteration, a new val named file is initialized with an element value. 
+
+You can create Ranges using syntax like "1 to 5" and can iterate through them with a for. Here is a simple example:
+```
+scala> for (i <- 1 to 4)
+      println("Iteration " + i)
+Iteration 1
+Iteration 2
+Iteration 3
+Iteration 4
+```
+
+#### Filtering
+
+For example, the code shown in Listing 7.6 lists only those files in the current directory whose names end with ".scala":
+```
+val filesHere = (new java.io.File(".")).listFiles
+for (file <- filesHere if file.getName.endsWith(".scala"))
+   println(file)
+```
+
+#### Nested iteration
+
+If you add multiple <- clauses, you will get nested "loops."
+
+The outer loop iterates through filesHere, and the inner loop iterates through fileLines(file) for any file that ends with .scala.
+
+```
+    def fileLines(file: java.io.File) =
+      scala.io.Source.fromFile(file).getLines().toList
+    def grep(pattern: String) =
+      for (
+        file <- filesHere
+        if file.getName.endsWith(".scala");
+        line <- fileLines(file)
+        if line.trim.matches(pattern)
+      ) println(file + ": " + line.trim)
+    grep(".*gcd.*")
+```
+
+### 7.4 EXCEPTION HANDLING WITH TRY EXPRESSIONS
+
+#### Throwing exceptions
+`throw new IllegalArgumentException`
+
+#### Catching exceptions
+
+```
+    import java.io.FileReader
+    import java.io.FileNotFoundException
+    import java.io.IOException
+    try {
+      val f = new FileReader("input.txt")
+      // Use and close file
+    } catch {
+      case ex: FileNotFoundException => // Handle missing file
+      case ex: IOException => // Handle other I/O error
+}
+```
+
+#### The finally clause
+
+You can wrap an expression with a finally clause if you want to cause some code to execute no matter how the expression terminates.
+
+```
+ import java.io.FileReader
+    val file = new FileReader("input.txt")
+    try {
+      // Use the file
+    } finally {
+      file.close()  // Be sure to close the file
+    }
+```
+
+### 7.7 VARIABLE SCOPE
+
+If you're a Java programmer, you'll find that Scala's scoping rules are almost identical to Java's. One difference between Java and Scala is that Scala allows you to define variables of the same name in nested scopes. 
+
+Once a variable is defined, you can't define a new variable with the same name in the same scope. For example, the following script with two variables named a in the same scope would not compile:
+```
+val a = 1
+val a = 2 // Does not compile
+println(a)
+```
+You can, on the other hand, define a variable in an inner scope that has the same name as a variable in an outer scope. The following script would compile and run:
+```
+val a = 1;
+{
+  val a = 2 // Compiles just fine
+  println(a)
+}
+println(a)
+```
+
+
 
 
 
