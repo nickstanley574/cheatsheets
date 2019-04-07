@@ -163,7 +163,193 @@ Arithmetic expressions use prefix notation. Prefix notation, is a mathematical n
 - `eval` function evaluates an expression
 - `read` function reads an expression
 
-Bookmark-lecture
+## TYPES
+
+Type checking: 
+- static (compile-time) - STRONG 
+- dynamic (runtime) - WEAK
+
+Types used to describe when operations allowed: Java: + allowed on strings and numeric types  Conversion to strings usingtoString
+
+### DYNAMIC TYPE CHECKING: 
+- Tracks and stores type of data at runtime
+- Checks types before applying an operation
+
+EXAMPLE: SCHEME / DYNAMIC: 
+Dynamic type checking detects a failure: 
+```
+#;> (- 5 "hello")
+Error in -: expected type number, got '"hello"'.
+```
+Type checker invoked before execution starts?
+```
+#;> (define (f) (- 5 "hello"))
+#;> (f)
+Error in -: expected type number, got '"hello"'.
+```
+Failure is when f run! Conclusion: no type checking before execution. 
+
+### STATIC TYPE CHECKING
+- Compiler analyzes code for type errors
+- Reports (rejects) programs with incorrect usage
+- Found in C, Java, Scala, Haskell, Rust, Coq, etc.
+
+EXAMPLE: JAVA / STATIC: 
+
+```
+class Typing01 {
+  void f () {
+    int a = 5;
+    String b = "hello";
+    System.out.println ("Result = " + (a - b));
+  }
+}
+```
+
+```
+$ javac Typing01.java
+Typing01.java:5: error: bad operand types for binary operator '-'
+    System.out.println ("Result = " + (a - b));
+                                         ^
+  first type:  int
+  second type: Strin
+  ```
+  
+### SHAPE ERRORS
+- Memory location contains data written at a given type (such as character array)
+- Shape errors are silent and allow access
+- Scheme prevents shape errors by throwing an exception and denying access
+
+### STRONG VS WEAK
+- Strong typing guarantees no shape errors
+- Weak typing may permit shape errors
+- Shape error = data used contrary to type 
+    - E.g., a floating point number used as an integer
+- **Strong, static:** Java, C#, Scala, Rust, etc. early warning, strong guarantees
+- **Weak, static:** C early warning, weak guarantees
+- **Strong, dynamic:** Scheme, Python, Ruby, etc. problem detected at runtime
+
+IS JAVA STRONG? - Yes, error is detected before memory is accessed
+IS JAVA DYNAMIC? - Java's type checking is mostly static
+
+### DYNAMIC CHECKS IN JAVA
+- Arrays
+    - Reading always safe, Writing potentially dangerous
+    - Bounds checking prevents C-like indexing errors
+- Casting
+    - Upcasting always safe, Downcasting potentially dangerous
+- Garbage collection and restricted use of pointers
+    
+### TRADEOFFS
+- Dynamic:
+ - more flexible
+ - usually conceptually simpler
+ - faster compilation
+ - easier runtime code generation/modification
+- Static:
+ - compile-time detection of errors
+ - no unit tests for type checking
+ - automatic documentation
+ - faster runtime (dynamic checks, optimization)
+ - less memory consumption at runtime
+ 
+ ## SCALA INTRODUCTION
+ 
+- Functional and object-oriented PL
+- Compiles to JVM: Interop: Scala calls Java; Java calls Scala
+- Scala has a REPL like Scheme, ML, Python, etc. 
+- Access to Java libraries
+- For real programs and homeworks, use sbt to run tests
+- You can use :console/:quit to get a REPL within sbt
+- Scala performs static type checking
+
+### IMMUTABLE VARIABLES
+```
+** Java **
+final int x = 10;  // declare and initialize x
+x = 11;            // assignment to x fails
+Final.java:4: error: cannot assign a value to final variable x
+
+** C **
+const int x = 10;  // declare and initialize x
+x = 11;            // assignment to x fails
+final.c:6:3: error: assignment of read-only variable ‘x’
+
+** Scala ** 
+
+val x = 10         // declare and initialize x
+x = 11             // assignment to x fails
+final.scala:3: error: reassignment to val
+```
+
+### MUTABLE VARIABLES
+```
+** Java **
+nt x = 10;        // declare and initialize x
+x = 11;            // assignment to x OK
+
+** C **
+int x = 10;        // declare and initialize x
+x = 11;            // assignment to x OK
+
+** Scala ** 
+var x = 10         // declare and initialize x
+x = 11             // assignment to x OK
+```
+
+**Scala is expression oriented; no statements like Scheme, ML, etc. unlike C, Java, etc.**
+
+### EXPRESSION ORIENTED
+
+- C comma expressions `(e_1, e_2, ..., e_n)`
+- Scheme begin expressions `(begin e_1 e_2 ... e_n)`
+- Scala compound expressions `{e_1; e_2; ...; e_n}`
+
+### METHODS
+
+Parameters require type annotations: `def plus (x:Int, y:Int) : Int = x + y`
+
+Return types can often be inferred but are required for recursive method
+
+Body is an expression; its value is returned
+
+### EVERYTHING IS AN OBJECT
+
+5:Int is an object with methods: `5.toDouble`
+Methods can have symbolic names: `5.+ (6)`
+
+### IMMUTABLE TUPLES
+
+### IMMUTABLE LINKED LISTS
+```
+** Scheme** 
+(car (cons 1 (cons 2 (cons 3 (cons 4 ())))))
+(cdr (cons 1 (cons 2 (cons 3 (cons 4 ())))))
+
+** Scala **
+(1 :: (2 :: (3 :: (4 :: Nil)))).head
+(1 :: (2 :: (3 :: (4 :: Nil)))).tail
+
+** Scheme **
+'(1 2 3)
+
+** Scala **
+List (1, 2, 3)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Programming in Scala: A Comprehensive Step-by-step Guide by Odersky (PS)
 
