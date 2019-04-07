@@ -739,8 +739,101 @@ ML is a programming language that encourages programming with functions. It is e
 ML has several forms that allow programmers to define their own types and type constructors. 
 
 
+## Chapter 6: Type Systems and Type Inference
 
+Because programming languages are designed to help programmers organize computational constructs and use them correctly, many programming languages organize data and computations into collections called types. In this chapter, we look at the reasons for using types in programming languages, methods for type checking, and some typing issues such as polymorphism, overloading, and type equality.
 
+### 6.1 TYPES IN PROGRAMMING
+
+A well-designed program uses concepts related to the problem being solved. For example, a banking program will be organized around concepts common to banks, such as accounts, customers, deposits, withdrawals, and transfers.
+
+A type error occurs when a computational entity, such as a function or a data value, is used in a manner that is inconsistent with the concept it represents. For example, if an integer value is used as a function, this is a type error. 
+
+The reason why many people find the concept of type error confusing is that type errors generally depend on the concepts defined in a program or programming language, not the way that programs are executed on the underlying hardware. To be specific, it is just as much of a type error to apply an integer operation to a floating-point argument as it is to apply a floating-point operation to an integer argument. It does not matter which causes a hardware interrupt on any particular computer.
+
+### 6.2 TYPE SAFETY AND TYPE CHECKING
+
+A programming language is type safe if no program is allowed to violate its type distinctions. Sometimes it is not completely clear what the type distinctions are in a specific programming language.
+
+| Safety Example | languages | Explanation |
+| --- | --- | --- |
+| Not safe | C and C++ | Type casts, pointer arithmetic|
+| Almost safe | Pascal | Type casts, pointer arithmetic|
+| Safe | Lisp, ML, Smalltalk, Java | Explicit deallocation; dangling pointers Complete type checking| 
+
+- **Type Casts.** Type casts allow a value of one type to be used as another type. 
+- **Pointer Arithmetic.** C pointer arithmetic is not type safe. The expression *(p+i) has type A if p is defined to have type A*. Because the value stored in location p+i might have any type, an assignment like x = *(p+i) may store a value of one type into a variable of another type and therefore may cause a type error.
+- **Explicit Deallocation and Dangling Pointers.** In Pascal, C, and some other languages, the location reached through a pointer may be deallocated (freed) by the programmer. This creates a dangling pointer, a pointer that points to a location that is not allocated to the program. If p is a pointer to an integer, for example, then after we deallocate the memory referenced by p, the program can allocate new memory to store another type of value. This new memory may be reachable through the old pointer p, as the storage allocation algorithm may reuse space that has been freed. The old pointer p allows us to treat the new memory as an integer value, as p still has type int. This violates type safety.
+
+#### Compile-Time and Run-Time Checking
+
+- **Run-Time Checking.** In programming languages with run-time type checking, the compiler generates code so that, when an operation is performed, the code checks to make sure that the operands have the correct type. 
+- **Compile-Time Checking.** Many modern programming languages are designed so that it is possible to check expressions for potential type errors. In these languages, it is common to reject programs that do not pass the compile-time type checks. An advantage of compile-time type checking is that it catches errors earlier than run-time checking does: A program developer is warned about the error before the program is given to other users or shipped as a product.
+- **Conservativity of Compile-Time Checking.** A property of compile-time type checking is that the compiler must be conservative. This mean that compile-time type checking will find all statements and expressions that produce run-time type errors, but also may flag statements or expressions as errors even if they do not produce run-time errors. 
+
+| Form of Type Checking | Advantages | Disadvantages| 
+| --- | --- | --- |
+| Run-time |  Prevents type errors| Slows program execution |
+| Compile-time | Prevents type errors, Eliminates run-time tests, Finds type errors before execution and run-time tests | May restrict programming because tests are conservative. | 
+
+**Combining Compile-Time and Run-Time Checking.** Most programming languages actually use some combination of compile-time and run-time type checking.
+
+### 6.3 TYPE INFERENCE
+
+Type inference is the process of determining the types of expressions based on the known types of some symbols that appear in them. The difference between type inference and compile-time type checking is really a matter of degree. A type-checking algorithm goes through the program to check that the types declared by the programmer agree with the language requirements.
+
+#### 6.3.2 Type-Inference Algorithm
+
+The ML type-inference algorithm uses the following three steps:
+1. A assign a type to the expression and each subexpression. 
+2. Generates a set of constraints on types, using the parse tree of the expression. These constraints reflect the fact that if a function is applied to an argument. 
+3. Solve these constraints by means of unification, which is a substitution-based algorithm for solving systems of equations. 
+
+### 6.4 POLYMORPHISM AND OVERLOADING
+
+Polymorphism, which literally means "having multiple forms," refers to constructs that can take on different types as needed. 
+
+#### Parametric polymorphism
+In which a function may be applied to any arguments whose types match a type expression involving type variables; The main characteristic of parametric polymorphism is that the set of types associated with a function or other value is given by a type expression that contains type variables. In parametric polymorphism, a function may have infinitely many types, as there are infinitely many ways of replacing type variables with actual types. The sort function, for example, may be used to sort lists of integers, lists of lists of integers, lists of lists of lists of integers, and so on.
+
+Parametric polymorphism may be implicit or explicit. In explicit parametric polymorphism, the program text contains type variables that determine the way that a function or other value may be treated polymorphically. 
+
+Parametric polymorphism can be contrasted with overloading. A symbol is overloaded if it has two (or more) meanings, distinguished by type, and resolved at compile time.
+ 
+- **ad hoc polymorphism**, another term for overloading, in which two or more implementations with different types are referred to by the same name;
+- **subtype polymorphism,** in which the subtype relation between types allows an expression to have many possible types.
+
+## 6.5 TYPE DECLARATIONS AND TYPE EQUALITY
+
+### 6.5.1 Transparent Type Declarations
+
+- **transparent**, meaning an alternative name is given to a type that can also be expressed without this name. 
+- **opaque**, meaning a new type is introduced into the program that is not equal to any other type.
+
+## 6.6 CHAPTER SUMMARY
+
+### Reasons for Using Types
+
+- Naming and organizing concepts: Functions and data structures can be given types that reflect the way these computational constructs are used in a program.
+- Making sure that bit sequences in computer memory are interpreted consistently: Type checking keeps operations from being applied to operands in incorrect ways.
+- Providing information to the compiler about data manipulated by the program: In languages in which the compiler can determine the type of a data structure, for example, the type information can be used to determine the relative location of a part of this structure. 
+
+### Type Inference
+
+Type inference is the process of determining the types of expressions based on the known types of some of the symbols that appear in them.
+
+The following steps are used for type inference:
+1. Assign a type to the expression and each subexpression by using the known type of a symbol of a type variable.
+2. Generate a set of constraints on types by using the parse tree of the expression.
+3. Solve these constraints by using unification, which is a substitution-based algorithm for solving systems of equations.
+
+### Polymorphism and Overloading
+
+The difference between parametric polymorphism and overloading is that parametric polymorphism allows one algorithm to be given many types, whereas overloading involves different algorithms. For example, the function + is overloaded in many languages. In an expression adding two integers, the integer addition algorithm is used. In adding two floating-point numbers, a completely different algorithm is used for computing the sum.
+
+### Type Declarations and Type Equality
+
+We discussed opaque and transparent type declarations. In opaque type declarations, the type name stands for a distinct type different from all other types. In transparent type declarations, the declared name is a synonym for another type. Both forms are used in many programming languages.
 
 
 
