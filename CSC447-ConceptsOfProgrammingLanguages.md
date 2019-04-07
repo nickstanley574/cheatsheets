@@ -354,9 +354,9 @@ if (args.length > 0) {
 else
     Console.err.println("Please enter filename")
 ```
-##Chapter 4: Classes and Objects
+## Chapter 4: Classes and Objects
 
-## 4.1 CLASSES, FIELDS, AND METHODS
+### 4.1 CLASSES, FIELDS, AND METHODS
 A class is a blueprint for objects. Once you define a class, you can create objects from the class blueprint with the keyword new.
 Inside a class definition, you place fields and methods, which are collectively called **members**.
 
@@ -364,17 +364,17 @@ Fields are also known **asinstance variables**, because every instance gets its 
 
 The way you make members public in Scala is by not explicitly specifying any access modifier. Put another way, where you'd say "public" in Java, you simply say nothing in Scala. **Public is Scala's default access level.**
 
-## 4.2 SEMICOLON INFERENCE
+### 4.2 SEMICOLON INFERENCE
 
 In a Scala program, a semicolon at the end of a statement is usually optional. You can type one if you want but you don't have to if the statement appears by itself on a single line. On the other hand, a semicolon is required if you write multiple statements on a single line.
 
-### THE RULES OF SEMICOLON INFERENCE
+#### THE RULES OF SEMICOLON INFERENCE
 In short, aline ending is treated as a semicolon unless one of the following conditions is true:
 1. The line in question ends in a word that would not be legal as the end of a statement, such as a period or an infix operator.
 2. The next line begins with a word that cannot start a statement.
 3. The line ends while inside parentheses (...) or brackets [...], because these cannot contain multiple statements anyway.
 
-## 4.3 SINGLETON OBJECTS
+### 4.3 SINGLETON OBJECTS
 Scala has singleton objects. A singleton object definition looks like a class definition, except instead of the keyword `class` you use the keyword `object` .When a singleton object shares the same name with a class, it is called that class's **companion object.**
 `object ChecksumAccumulator {` 
 
@@ -382,7 +382,7 @@ If you are a Java programmer, one way to think of singleton objects is as the ho
 
 A singleton object that does not share the same name with a companion class is called **astandalone object.** 
 
-## 4.4 A SCALA APPLICATION
+### 4.4 A SCALA APPLICATION
 
 Instead, you'll need to actually compile these files with the Scala compiler, then run the resulting class files. One way to do this is to use `scalac`, which is the basic Scala compiler, like this: `$ scalac ChecksumAccumulator.scala Summer.scala`
 
@@ -390,10 +390,201 @@ This compiles your source files, but there may be a perceptible delay before the
 
 The first time you run fsc, it will create a local server daemon attached to a port on your computer. It will then send the list of files to compile to the daemon via the port, and the daemon will compile the files. The next time you run fsc, the daemon will already be running, so fsc will simply send the file list to the daemon, which will immediately compile the files.
 
-## 4.5 THE APP TRAIT
+### 4.5 THE APP TRAIT
 To use the trait, you first write "extends App" after the name of your singleton object. Then instead of writing a main method, you place the code you would have put in the main method directly between the curly braces of the singleton object. You can access command-line arguments via an array of strings named args. That's it. You can compile and run this application just like any other.
 
-Bookmark-PS
+## Chapter 5 Basic Types and Operations
+
+If you're familiar with Java, you'll be glad to find that Java's basic types and operators have the same meaning in Scala.
+
+### 5.1 SOME BASIC TYPES
+
+| Basic type | Range | 
+| --- | -- | 
+| Byte | 8-bit signed two's complement integer (-27 to 27 - 1, inclusive) |
+| Short | 16-bit signed two's complement integer (-215 to 215 - 1, inclusive) |
+| Int | 32-bit signed two's complement integer (-231 to 231 - 1, inclusive) | 
+| Long | 64-bit signed two's complement integer (-263 to 263 - 1, inclusive) | 
+| Char | 16-bit unsigned Unicode character (0 to 216 - 1, inclusive) | 
+| String | a sequence of Chars | 
+| Float | 32-bit IEEE 754 single-precision float | 
+| Double | 64-bit IEEE 754 double-precision float | 
+| Boolean | true or false | 
+
+#### Two's complement Review 
+It basically says,
+
+for zero, use all 0's.
+for positive integers, start counting up, with a maximum of 2(number of bits - 1)-1.
+for negative integers, do exactly the same thing, but switch the role of 0's and 1's (so instead of starting with 0000, start with 1111 - that's the "complement" part).
+
+```
+0000 - zero
+0001 - one
+0010 - two
+0011 - three
+0100 to 0111 - four to seven
+
+1111 - negative one
+1110 - negative two
+1101 - negative three
+1100 to 1000 - negative four to negative eight
+```
+Doing this, the first bit gets the role of the "sign" bit, as it can be used to distinguish between positive and negative decimal values. If the most significant bit is 1, then the binary can be said to be negative, where as if the most significant bit (the leftmost) is 0, you can say discern the decimal value is positive.
+https://stackoverflow.com/questions/1049722/what-is-2s-complement
+
+### 5.2 LITERALS
+
+#### FAST TRACK FOR JAVA PROGRAMMERS
+
+The syntax of most literals shown in this section are exactly the same as in Java, so if you're a Java master, you can safely skip much of this section.
+
+#### Integer literals
+
+Integer literals for the types Int, Long, Short, and Byte come in two forms: decimal and hexadecimal. The way an integer literal begins indicates the base of the number. If the number begins with
+a 0x or 0X, it is hexadecimal (base 16), and may contain 0 through 9 as well as upper or lowercase digits A through F. Some examples are:
+```
+scala> val hex = 0x5
+hex: Int = 5
+scala> val hex2 = 0x00FF
+hex2: Int = 255
+scala> val magic = 0xcafebabe
+magic: Int = -889275714
+ ```
+ 
+ If an integer literal ends in an L or l, it is a Long; otherwise it is an Int. 
+ 
+If an Int literal is assigned to a variable of type Short or Byte, the literal is treated as if it were aShort or Byte type so long as the literal value is within the valid range for that type. For example:
+```
+scala> val little: Short = 367
+little: Short = 367
+scala> val littler: Byte = 38
+ittler: Byte = 38
+```
+
+#### Floating point literals
+
+Floating point literals are made up of decimal digits, optionally containing a decimal point, and optionally followed by an E or e and an exponent. Some examples of floating-point literals are:
+```
+scala> val big = 1.2345
+big: Double = 1.2345
+scala> val bigger = 1.2345e1
+bigger: Double = 12.345
+scala> val biggerStill = 123E45
+biggerStill: Double = 1.23E47
+```
+
+Note that the exponent portion means the power of 10 by which the other portion is multiplied. Thus, 1.2345e1 is 1.2345 times 101, which is 12.345. If a floating-point literal ends in an F or f, it is a Float; otherwise it is a Double.
+
+#### Character literals
+
+Character literals are composed of any Unicode character between single quotes, such as:
+
+```
+scala> val a = 'A'
+a: Char = A
+```
+
+In addition to providing an explicit character between the single quotes, you can identify a character using its Unicode code point. To do so, write \u followed by four hex digits with the code point, like this:
+```
+scala> val d = '\u0041'
+d: Char = A
+```
+
+Finally, there are also a few character literals represented by special escape sequences, shown in Table: 
+| Literal | Meaning | 
+| --- | --- | 
+| `\n` | line feed (\u000A) | 
+| `\b` | backspace (\u0008) |
+| `\t` | tab (\u0009) | 
+| `\f` |form feed (\u000C) | 
+| `\r` | carriage return (\u000D) \" double quote (\u0022) |
+| `\'` | single quote (\u0027) |
+| `\\` | backslash (\u005C) | 
+
+#### Symbol literals
+
+A symbol literal is written 'ident, where ident can be any alphanumeric identifier. Such literals are mapped to instances of the predefined class scala.Symbol. 
+
+#### Boolean literals
+
+```
+scala> val bool = true
+bool: Boolean = true
+scala> val fool = false
+fool: Boolean = false
+```
+
+### 5.3 STRING INTERPOLATION
+
+```
+Here's an example:
+val name = "reader"
+println(s"Hello, $name!")
+```
+
+### 5.4 OPERATORS ARE METHODS
+
+Operators are actually just a nice syntax for ordinary method calls. For example, `1 + 2` really means the same thing as `1.+(2)`.
+
+```
+scala> val sum = 1 + 2    // Scala invokes 1.+(2)
+sum: Int = 3
+```
+
+#### ANY METHOD CAN BE AN OPERATOR
+
+In Scala operators are not special language syntax; any method can be an operator. What makes a method an operator is how you use it. When you write `s.indexOf('o')`,indexOf is not an operator. But when you write `s indexOf 'o'`, indexOf is an operator, because you're using it in operator notation.
+`  scala> -2.0                  // Scala invokes (2.0).unary_-` 
+
+### 5.5 ARITHMETIC OPERATIONS
+
+You can invoke arithmetic methods via infix operator notation for addition (+), subtraction (-), multiplication (\*), division (/), and remainder (%) on any numeric type. 
+
+### 5.6 RELATIONAL AND LOGICAL OPERATIONS
+
+You can compare numeric types with relational methods greater than (>), less than (<), greater than or equal to (>=), and less than or equal to (<=), which yield a Boolean result. 
+
+Logical methods, logical-and (&& and &) and logical-or (|| and |), take Boolean operands in infix notation and yield a Boolean result.
+
+### 5.7 BITWISE OPERATIONS
+
+Scala enables you to perform operations on individual bits of integer types with several bitwise methods. The bitwise methods are: bitwise-and (&), bitwise-or (|), and bitwise-xor (^).[5] The unary bitwise complement operator (~, the method unary_~) inverts each bit in its operand. 
+
+Scala integer types also offer three shift methods: shift left (<<), shift right (>>), and unsigned shift right (>>>). The shift methods, when used in infix operator notation, shift the integer value on the left of the operator by the amount specified by the integer value on the right. Shift left and unsigned shift right fill with zeroes as they shift. Shift right fills with the highest bit (the sign bit) of the left-hand value as it shifts. 
+
+### 5.8 OBJECT EQUALITY
+
+If you want to compare two objects for equality, you can use either == or its inverse !=. These operations actually apply to all objects, not just basic types. For example, you can use== to compare lists. You can even compare against null, or against things that might be null. No exception will be thrown. 
+
+### 5.9 OPERATOR PRECEDENCE AND ASSOCIATIVITY
+
+For example, the expression 2 + 2 * 7 evaluates to 16, not 28, because the * operator has a higher precedence than the + operator. Thus the multiplication part of the expression is evaluated before the addition part. You can of course use parentheses in expressions to clarify evaluation order or to override precedence. For example, if you really wanted the result of the expression above to be 28, you could write the expression like this: (2 + 2) * 7
+
+#### Operator precedence: 
+
+- (all other special characters) 
+- * / %
+- +-
+- :
+-  =! <> &
+- ^
+- |
+- (all letters)
+- (all assignment operators)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ____
 
