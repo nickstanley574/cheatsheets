@@ -163,6 +163,7 @@ Arithmetic expressions use prefix notation. Prefix notation, is a mathematical n
 - `eval` function evaluates an expression
 - `read` function reads an expression
 
+Bookmark-lecture
 
 # Programming in Scala: A Comprehensive Step-by-step Guide by Odersky (PS)
 
@@ -392,7 +393,7 @@ The first time you run fsc, it will create a local server daemon attached to a p
 ## 4.5 THE APP TRAIT
 To use the trait, you first write "extends App" after the name of your singleton object. Then instead of writing a main method, you place the code you would have put in the main method directly between the curly braces of the singleton object. You can access command-line arguments via an array of strings named args. That's it. You can compile and run this application just like any other.
 
-__
+Bookmark-PS
 
 ____
 
@@ -573,4 +574,177 @@ The following contributions are some that are important to the field of programm
 - Lists. The basic data structure in early Lisp was the cons cell. The main use of cons cells in modern forms of Lisp is for building lists, and lists are used for everything.
 - Programs as data. - In Lisp, a program can build the list representation of a function or other forms of expression and then use the eval function to evaluate the expression.
 - Garbage collection - Lisp was the first language to manage memory for the programmer automatically.
+
+## Chapter 5: The Algol Family and ML
+
+The Algol-like programming languages evolved in parallel with the Lisp family of languages, beginning with Algol 58 and Algol 60 in the late 1950s. In this chapter, we look at some of the historically important languages from the Algol family, including Algol 60, Pascal, and C.
+
+### 5.1 THE ALGOL FAMILY OF PROGRAMMING LANGUAGES
+
+The main characteristics of the Algol family are the familiar colon-separated sequence of statements used in most languages today, block structure, functions and procedures, and static typing.
+
+In Algol, the two-character sequence `:=` is used for assignment, and the single character `=` for test for equality. 
+
+**Pass-by-Name.** Perhaps the strangest feature of Algol 60, in retrospect, is the use of pass-by-name. In pass-by-name, the result of a procedure call is the same as if the formal parameter were substituted into the body of the procedure. This rule for defining the result of a procedure call by copying the procedure and substituting for the formal parameters is called the Algol 60 copy rule. 
+
+**BNF.** An important by-product of the Algol 60 design effort was the invention of Backus Normal Form (or BNF), which was used in the Algol 60 report to define the well-formed programs of the language. BNF, summarized in Subsection 4.1.2, remains the standard notation for describing the syntax of programming languages. Although Algol 60 was very influential and commonly used in academic circles and in Europe, it was not a commercial success in the United States.
+
+#### 5.1.3 Pascal
+
+Pascal was design in the 1970s by Niklaus Wirth, who used the data-structuring ideas advanced by C.A.R. (Tony) Hoare. Wirth first designed and implemented a language called Algol W and then refined the design of Algol W to produce Pascal.
+
+Although the use of Pascal declined in the 1990s, Pascal was one of the most widely used programming languages over approximately a 20-year period. Pascal was very successful as a programming language for teaching, in part because it was designed explicitly for this purpose. Pascal was also used for a significant number of production programming projects, including operating systems and applications for the Apple Macintosh.
+
+An important contribution of the Pascal type system is the rich set of data-structuring concepts. These include records (similar to C structs), variant records (a form of union type), and subranges.
+
+### 5.2 THE DEVELOPMENT OF C
+
+There are several reasons for the success of C. One reason, which is unrelated to the design of the language it self, is the popularity of the Unix operating system, which was written in C.
+
+C was originally designed and implemented from 1969 to 1973, as part of the Unix operating system project at Bell Laboratories. C was designed by Dennis Ritchie, one of the original designers of Unix, so that he and Ken Thompson could build Unix in a language that they liked.
+
+#### C Arrays and Pointers
+
+In C, pointers and arrays are declared differently, as if pointers and arrays are different types of values. For example, the following code declares a pointer p to an integer location and an array A of integers:
+```
+int*p;
+int A[5];
+```
+ In C, arrays are effectively treated as pointers. To quote Dennis Ritchie's 1975 C Reference Manual,
+> Every time an identifier of array type appears in an expression, it is converted into a pointer to the first member of the array.... By definition, the subscript operator [] is interpreted in such a way that "E1[E2]" is identical to "*((E1)+(E2))." Because of the conversion rules which apply to +, if E1 is an array and E2 is an integer, then E1[E2] refers to the E2-th member of E1.
+There is no other programming language in widespread use that allows pointer arithmetic in this way.
+
+#### Critique
+Most C programmers have eventually come to consider the weak type checking of many C compilers to be a disadvantage. In fact, one of the most commonly cited advantages of C++ over C is the fact that C++ provides better type checking.
+
+### 5.3 THE LCF SYSTEM AND ML
+
+The following list enumerates our main reasons for looking at ML in some detail:
+- ML illustrates most of the important concepts of the Lisp/Algol families of languages.
+- ype systems have been an important part of programming language design from 1960 to the present day, and the ML type system is often considered the cleanest and most expressive type system to date.
+- Because most readers are familiar with C and many have not written a lot of programs in significantly different languages, it is useful to have a language other than C to use for examples in the following chapters.
+- ML allows higher-order functions and other constructions that are discussed in the following chapters.
+
+One distinguishing feature of ML is its type system, which extends the successful Pascal type system in a number of ways. Unlike C, which has numerous loopholes, the ML type system is sound in a precise mathematical sense.
+
+ML was designed as the **Meta- Language** (hence its name) of the LCF System. Its original purpose was for writing programs that would attempt to construct mathematical proofs.
+
+More specifically, because a tactic is a function from formulas to proofs, the type of a tactic would be a function type: `tactic : formula → proof`
+
+From this inspiration, Milner developed the first type-safe exception mechanism, one of the accomplishments that led to his Turing Award in 1991. Allowing for the possibility of exceptions, a function f that maps A to B, written as: `f:A → B` IN ML, means that, for all x in A, if f (x) terminates normally without raising an exception, then f (x) is in B.
+
+### 5.4 THE ML PROGRAMMING LANGUAGE
+
+Most ML compilers are based on the same kind of read-eval-print loop as many Lisp implementations. The standard way of interacting with the ML system is to enter expressions and declarations one at a time. As each is entered, the source code is type checked, compiled, and executed.
+
+#### Expressions
+```
+--- <expression>;
+val it = <print_value> : <type>
+```
+
+where "-" is the prompt for user input and the line below is output from the ML compiler and run-time system. The preceding lines show that if you type in an expression, the compiler will compile the expression and evaluate it. The output is a bit cryptic: it is a special identifier bound to the value of the last expression entered, so it = <print_value> : <type> means that the value of the expression is <print_value> and this is a value of type <type>. It is probably easier to understand the idea from a few examples. Here are four lines of input and the resulting compiler output:
+    
+```
+--- (5+3) -2;
+val it = 6 : int
+```
+
+#### Declarations
+
+```
+--- val <identifier> = <expression>;
+val <identifier> = <print_value> : <type>
+```
+
+The keyword val stands for value. When a declaration is given to the compiler, the value associated with the identifier is computed and bound to that identifier. Because the value of the expression used in a declaration has a name, the compiler output uses this name instead of it for the value of the expression. Here are some examples:
+
+```
+--- val x=7+2; 
+val x = 9 : int
+```
+
+Functions can be declared with the keyword fun (which stands for function) instead of val. The general form of user input and compiler output is
+
+```
+--- fun <identifier> <arguments> = <expression>; 
+val <identifier> = fn <arg_type> → <result_type>
+```
+
+This declares a function whose name is <identifier>. The argument type is determined by the form of <arguments> and the result type is determined by the form of <expression>.
+    
+```
+--- fun f(x) = x + 5; 
+val f = fn : int → int
+```
+
+This declaration binds a function value to the identifier f. The value of f is a function from integers to integers. 
+
+#### Unit
+
+`( ) : unit` 
+
+Like void in C, unit is used as the result type for functions that are executed only for side effects. 
+
+#### Bool
+
+```
+true : bool 
+false : bool
+```
+
+There are also ML Boolean operations for and, or, not, and so on. These are similar to AND, OR, and NOT in Pascal or &&, ?, and ! in C, with some minor differences. Negation is written as not, conjunction (and) is written as andalso and disjunction (or) is written as orelse.
+
+#### Integers
+
+Many ML integer expressions are written in the usual way, with number constants and standard arithmetic operations:
+
+#### Strings
+
+Strings are written as a sequence of symbols between double quotes:
+
+#### Real
+
+The ML type for floating-point numbers is real. For reasons that will be easier to understand when we come to type inference, ML requires a decimal point in real constants. The arithmetic operators +, -, and * may be applied to either integers or real numbers. 
+
+#### Tuples
+
+A tuple may be a pair, triple, quadruple, and so on. In ML, tuples may be formed of any types of values. Tuple values are written with parentheses and tuple types are written with *. 
+
+#### Records
+
+Like Pascal records and C structs, ML records are similar to tuples, but with named components. Record values and record types are written with curly braces. 
+
+#### Lists
+
+ML lists can have any length, but all elements of a list must have the same type. We can write lists by listing their elements, separated by commas, between brackets.
+
+#### Value Declarations
+
+```
+val <pattern> = <exp> ;
+```
+a pattern can be an identifier, a tuple pattern, a list cons pattern, a record pattern, or a declared data-type constructor pattern. A tuple pattern is a sequence of patterns between parentheses, a list cons pattern is two patterns separated by double colons, a record pattern is a recordlike expression with each field in the form of a pattern, and a constructor pattern is an identifier (a declared constructor) applied to the right number of pattern arguments. 
+
+
+#### Function Declarations
+
+```
+fun f( <pattern> ) = <exp>
+```
+
+### 5.4.6 ML Summary
+
+ML is a programming language that encourages programming with functions. It is easy to define functions with function arguments and function return results. ML has an expressive type system. There are basic types for many common kinds of computable values, such as Booleans, integers, strings, and reals. The ML type system is often called a strong type system, as every expression has a type and there are no mechanisms for subverting the type system.
+ML has several forms that allow programmers to define their own types and type constructors. 
+
+
+
+
+
+
+
+Bookmark-CLP
+
+
 
