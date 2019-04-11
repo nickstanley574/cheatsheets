@@ -121,8 +121,69 @@ Types of Hackers:
 ```
 Initial Client Meeting -> Sign NDA -> Security Evaluation Plan -> Conduct the Test -> Report and Documentation -> Present Report Findings
 ```
+## Footprinting, Recon, and Social Engineering
 
+Footprinting is the initial step you will take in a pen test. The depth or amount of footprinting will depending on the type of assessment. It Consists of determining Specific domains, Network addresses or network blocks, Network devices, routers, IDS/IPS and firewalls and Email systems, name servers, web application server, and other publicly facing systems for the target. 
 
+### Things to gather during this Footprinting: 
+- Domain names
+- Network blocks, services and applications
+- Specific IP addresses
+- Phone numbers, contact addresses, maps, email addresses
+- Related organizations or companies
+- Current events, employee postings, job postings, resumes
+- System architecture
+- IDS/IPS, filters, firewalls, etc.
+- Authentication mechanisms
+
+### Intel Gathering:
+- OSINT – Open-Source Intelligence (passive) - Data collected from publicly available sources 
+- HUMINT – Human Intelligence (active) - Information gathered from a human
+- SIGINT – Signals Intelligence (active) - Information gathered from interception of signals
+
+Some useful Google commands include (usage is command:term):
+- **site** – searches for a specific term/phrase on a specific site
+- **filetype** – searches for a specific term/phrase within a specific filetype
+- **link** – searches for a specific term/phrase to identify linked pages
+- **intitle** - searches for a specific term/phrase within the title of a document
+- **inurl** - searches for a specific term/phrase within the URL
+
+### DNS/IP/Email Recon
+
+#### DNS 
+- Enumerate DNS zones to find systems by name and network address
+- Shows the type of internet accessible systems due to naming convention 
+
+**DNS record types you should know**
+- A – host record which maps a name to IP
+- SOA – start of authority record which IDs the DNS server which owns the zone
+- CNAME – alias for a record (i.e. mapping many names to a single IP)
+- MX – mail exchanger record which IDs the mail server and order they should be contacted in
+- SRV – services record (_service._proto.name TTL class SRV priority weight port target).  Examples are LDAP and Kerberos in MS AD
+- PTR – pointer record maps IPs to names
+- NS – name server record IDs the name servers responsible for resolution for the domain
+
+### Social Engineering
+
+What is social engineering - The use of non technical methods used to gather information about a target:
+- Human-based – person to person contact and using deception and manipulation
+   - Impersonating employees, end users, or someone of importance
+   - Calling technical support
+   - Shoulder surfing/dumpster diving
+- Computer-based – Using software to retrieve the information
+   - Email attachments
+   - Fake websites
+   - Pop-up windows (not so much anymore)
+- Other social engineering
+   - Insider attacks – getting hired by the target or service provider
+   - Phishing attacks
+   - Online scams
+   - URL obfuscation
+   
+### Tor Networks
+- Allows for anonymous internet usage though the Tor network
+- Users of the network install ToR proxy services in order to access the network
+- Relays communication through a series of routers which utilize multi-layer encryption (IP of sender and receiver are not both readable at any point in the network)
 
 # Book & Supplemental Readings 
 
@@ -185,3 +246,5 @@ Internal—Contrary to what management usually thinks this is, it is not a strat
 8. APPROVALS
 9. ADDENDUMS
     
+### http://www.pentest-standard.org/index.php/Intelligence_Gathering 
+
