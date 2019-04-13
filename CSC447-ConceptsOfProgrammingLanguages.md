@@ -2,7 +2,7 @@
 
 # Lecture Notes 
 
-## Overview 
+## Topic -- Overview 
 
 Programming languages come and go... You will have to keep learning new languages
 
@@ -20,7 +20,7 @@ Programming languages come and go... You will have to keep learning new language
 
 **Program:** tells machine how to respond to input and outputs
 
-## C: STATEMENTS VERSUS EXPRESSIONS, STRICT VERSUS NONSTRICT AND UNDEFINED BEHAVIOR
+## Topic -- C: STATEMENTS VERSUS EXPRESSIONS, STRICT VERSUS NONSTRICT AND UNDEFINED BEHAVIOR
 
 Statements: executed for their side-effects
 - Expression statements (including assignment)
@@ -55,7 +55,7 @@ A **macro** is a fragment of code which has been given a name. Whenever the name
 
 In computer programming, **undefined behavior** is the result of executing computer code whose behavior is not prescribed by the language specification to which the code adheres, for the current state of the program.
 
-## SCHEME (LISP AND SCHEME)
+## Topic -- SCHEME (LISP AND SCHEME)
 - Influential programming language from the 1950s
 - Pioneered many PL concepts:
     - automatic garbage collection
@@ -163,31 +163,27 @@ Arithmetic expressions use prefix notation. Prefix notation, is a mathematical n
 - `eval` function evaluates an expression
 - `read` function reads an expression
 
-## TYPES
+## Topic -- TYPES
 
-Type checking: 
-- static (compile-time) - STRONG 
-- dynamic (runtime) - WEAK
-
-Types used to describe when operations allowed: Java: + allowed on strings and numeric types  Conversion to strings usingtoString
+Types used to describe when operations allowed: Java: `+` allowed on strings and numeric types  Conversion to strings using `toString`
 
 ### DYNAMIC TYPE CHECKING: 
-- Tracks and stores type of data at runtime
+- Tracks and stores type of data at **runtime**
 - Checks types before applying an operation
 
 EXAMPLE: SCHEME / DYNAMIC: 
 Dynamic type checking detects a failure: 
 ```
-#;> (- 5 "hello")
+#;> (- 5 "hello") 
 Error in -: expected type number, got '"hello"'.
 ```
 Type checker invoked before execution starts?
 ```
-#;> (define (f) (- 5 "hello"))
-#;> (f)
+#;> (define (f) (- 5 "hello")) // compiles just fine
+#;> (f) // but when it runs ... it fail! 
 Error in -: expected type number, got '"hello"'.
 ```
-Failure is when f run! Conclusion: no type checking before execution. 
+Failure is when `f` run! Conclusion: no type checking before execution. 
 
 ### STATIC TYPE CHECKING
 - Compiler analyzes code for type errors
@@ -207,27 +203,29 @@ class Typing01 {
 ```
 
 ```
-$ javac Typing01.java
+$ javac Typing01.java 
 Typing01.java:5: error: bad operand types for binary operator '-'
     System.out.println ("Result = " + (a - b));
                                          ^
   first type:  int
   second type: Strin
   ```
+errors out BEFORE runtime ! 
   
-### SHAPE ERRORS
+### UNSAFE ACCESS (SHAPE ERRORS)
 - Memory location contains data written at a given type (such as character array)
-- Shape errors are silent and allow access
-- Scheme prevents shape errors by throwing an exception and denying access
+- The same memory location is read and interpreted at an incompatible type (such as int).
+- This is known as an **unchecked runtime type error** For brevity, I will call this an **unsafe access** 
+- Scheme prevents shape errors by _throwing an exception and denying access_
 
 ### STRONG VS WEAK
-- Strong typing guarantees no shape errors
-- Weak typing may permit shape errors
-- Shape error = data used contrary to type 
+- **Strong** typing **guarantees** no UNSAFE ACCESS
+- **Weak** typing may **permit** UNSAFE ACCESS
+- UNSAFE ACCESS = data used contrary to type 
     - E.g., a floating point number used as an integer
 - **Strong, static:** Java, C#, Scala, Rust, etc. early warning, strong guarantees
 - **Weak, static:** C early warning, weak guarantees
-- **Strong, dynamic:** Scheme, Python, Ruby, etc. problem detected at runtime
+- **Strong, dynamic:** Scheme, Python, Ruby, etc. problem detected at runtime, but before unsafe access occurs!
 
 IS JAVA STRONG? - Yes, error is detected before memory is accessed
 IS JAVA DYNAMIC? - Java's type checking is mostly static
@@ -241,27 +239,29 @@ IS JAVA DYNAMIC? - Java's type checking is mostly static
 - Garbage collection and restricted use of pointers
     
 ### TRADEOFFS
-- Dynamic:
- - more flexible
- - usually conceptually simpler
- - faster compilation
- - easier runtime code generation/modification
-- Static:
- - compile-time detection of errors
- - no unit tests for type checking
- - automatic documentation
- - faster runtime (dynamic checks, optimization)
- - less memory consumption at runtime
+
+| Dynamic                                     | Static                                        |
+|---------------------------------------------|-----------------------------------------------|
+| more flexible                               | compile-time detection of errors              |
+| usually conceptually simpler                | no unit tests for type checking               |
+| faster compilation                          | automatic documentation                       |
+| easier runtime code generation/modification | faster runtime (dynamic checks, optimization) |
+|                                             | less memory consumption at runtime            |
  
- ## SCALA INTRODUCTION
+ ## Topic -- SCALA INTRODUCTION
+
+ Scala = Scalable Component Abstractions
  
 - Functional and object-oriented PL
+- ML + Java + more
 - Compiles to JVM: Interop: Scala calls Java; Java calls Scala
 - Scala has a REPL like Scheme, ML, Python, etc. 
 - Access to Java libraries
 - For real programs and homeworks, use sbt to run tests
 - You can use :console/:quit to get a REPL within sbt
 - Scala performs static type checking
+- DISASSEMBLY To see what scala is doing, you can disassemble in the REPL: `scala> :javap -p -c -filter C`
+- Scala performs **static type checking**: `def f () { 5 - "hello" }  // rejected by type checker`
 
 ### IMMUTABLE VARIABLES
 ```
@@ -276,7 +276,6 @@ x = 11;            // assignment to x fails
 final.c:6:3: error: assignment of read-only variable ‘x’
 
 ** Scala ** 
-
 val x = 10         // declare and initialize x
 x = 11             // assignment to x fails
 final.scala:3: error: reassignment to val
@@ -285,7 +284,7 @@ final.scala:3: error: reassignment to val
 ### MUTABLE VARIABLES
 ```
 ** Java **
-nt x = 10;        // declare and initialize x
+int x = 10;        // declare and initialize x
 x = 11;            // assignment to x OK
 
 ** C **
@@ -297,9 +296,10 @@ var x = 10         // declare and initialize x
 x = 11             // assignment to x OK
 ```
 
-**Scala is expression oriented; no statements like Scheme, ML, etc. unlike C, Java, etc.**
 
 ### EXPRESSION ORIENTED
+
+**Scala is expression oriented; no statements like Scheme, ML, etc. unlike C, Java, etc.**
 
 - C comma expressions `(e_1, e_2, ..., e_n)`
 - Scheme begin expressions `(begin e_1 e_2 ... e_n)`
@@ -307,49 +307,152 @@ x = 11             // assignment to x OK
 
 ### METHODS
 
-Parameters require type annotations: `def plus (x:Int, y:Int) : Int = x + y`
+- Parameters require type annotations: `def plus (x:Int, y:Int) : Int = x + y`
+- Return types can often be inferred but are required for recursive method
+- Body is an expression; its value is returned
 
-Return types can often be inferred but are required for recursive method
-
-Body is an expression; its value is returned
+#### METHODS VERSUS FIELDS
+- `def` can be used as non-parameterized methods: `def y = 1`
+- `val` and `def` differ in when initializer is executed.
+- `val` is strict; `def` is non-strict
 
 ### EVERYTHING IS AN OBJECT
 
-5:Int is an object with methods: `5.toDouble`
-Methods can have symbolic names: `5.+ (6)`
+- `5:Int` is an object with methods: `5.toDouble`
+- Methods can have symbolic names: `5.+ (6)`
+- `e1.f(e2)` can be written as `e1 f e2`: `5 + 6` , `5 max 6`
 
 ### IMMUTABLE TUPLES
 
+**Fixed number of heterogeneous items**
+
+```
+** Scala **
+val p : (Int, String) = (5, "hello")
+val x : Int = p._1
+
+** Java ** 
+public class Pair<X,Y> {
+  final X x;
+  final Y y;
+  public Pair (X x, Y y) { this.x = x; this.y = y; }
+
+  static void f () {
+    Pair<Integer, String> p = new Pair<Integer, String> (5, "hello");
+    Pair<Integer, String> q = new Pair<> (5, "hello"); // infer type params
+    int x = p.x;
+  }
+}
+```
+
 ### IMMUTABLE LINKED LISTS
+
+**Varying number of homogeneous items**
+
 ```
 ** Scheme** 
-(car (cons 1 (cons 2 (cons 3 (cons 4 ())))))
-(cdr (cons 1 (cons 2 (cons 3 (cons 4 ())))))
+(car (cons 1 (cons 2 (cons 3 (cons 4 ()))))) -> 1 
+(cdr (cons 1 (cons 2 (cons 3 (cons 4 ()))))) -> 2,3,4
 
 ** Scala **
-(1 :: (2 :: (3 :: (4 :: Nil)))).head
-(1 :: (2 :: (3 :: (4 :: Nil)))).tail
+(1 :: (2 :: (3 :: (4 :: Nil)))).head -> 1
+(1 :: (2 :: (3 :: (4 :: Nil)))).tail -> 2,3,4
 
 ** Scheme **
 '(1 2 3)
 
 ** Scala **
 List (1, 2, 3)
+```
+
+### PATTERN MATCHING
+
+```
+val p : (Int, String) = p match {
+  case (x, y) => "Int is %d".format (x)
+}
+
+val xs : List[Int] = // ...
+xs match {
+  case Nil   => "List is empty"
+  case y::ys => "List is non-empty, head is %d".format (y)
+}
+```
+
+#### Implement isEmpty, head, tail by pattern matching
+
+```
+def isEmpty [X] (xs:List[X]) : Boolean = xs match {
+  case Nil   => true
+  case y::ys => false
+}
+def head [X] (xs:List[X]) : X = xs match {
+  case Nil   => throw new NoSuchElementException ()
+  case y::ys => y
+}
+def tail [X] (xs:List[X]) : List[X] = xs match {
+  case Nil   => throw new NoSuchElementException ()
+  case y::ys => ys
+}
+```
+**Parametric polymorphism: X is type parameter**
+
+### RECURSIVE METHODS
+
+- Imperative programming typically has: iteration using while loops, mutable programming
+- Functional programming typically has: iteration using recursion, immutable programming
+
+```
+//Length of a linked list recursively
+def length (xs:List[Int]) : Int = xs match {
+  case Nil   => 0
+  case y::ys => 1 + length (ys)
+}
+
+//With parametric polymorphism
+def length [X] (xs:List[X]) : Int = xs match {
+  case Nil   => 0
+  case y::ys => 1 + length (ys)
+}
+
+/Ignore head of list with wildcard _
+def length [X] (xs:List[X]) : Int = xs match {
+  case Nil   => 0
+  case _::ys => 1 + length (ys)
+}
 
 ```
 
+#### Evaluate step-by-step: 
 
+```
+def length (xs:List[Int]) : Int = xs match {
+  case Nil   => 0
+  case y::ys => 1 + length (ys)
+}
 
+length (List (1, 2, 3))
+--> length (1::(2::(3::Nil)))
+--> 1 + length (2::(3::Nil))      // y = 1, ys = 2::(3::Nil)
+--> 1 + (1 + length (3::Nil))     // y = 2, ys = 3::Nil
+--> 1 + (1 + (1 + length (Nil)))  // y = 3, ys = Nil
+--> 1 + (1 + (1 + 0))
+--> 1 + (1 + 1)
+--> 1 + 2
+--> 3
 
+```
 
+### APPENDING LISTS
 
+List class has builtin method `:::`
 
+```
+scala> ((1 to 5).toList) ::: ((10 to 15).toList)
+res1: List[Int] = List(1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15)
+```
 
-
-
-
-
-
+[//]: # (endof lecture notes)
 
 # Programming in Scala: A Comprehensive Step-by-step Guide by Odersky (PS)
 
