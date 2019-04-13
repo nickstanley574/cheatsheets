@@ -991,21 +991,318 @@ val a = 1;
 println(a)
 ```
 
+## Chapter 8 Functions and Closures
+
+### 8.1 METHODS
+
+```
+import scala.io.Source
+object LongLines {
+  def processFile(filename: String, width: Int) = {
+    val source = Source.fromFile(filename)
+    for (line <- source.getLines())
+      processLine(filename, width, line)
+  }
+  private def processLine(filename: String,
+    width: Int, line: String) = {
+    if (line.length > width)
+      println(filename + ": " + line.trim)
+  }
+}
+```
+This is very similar to what you would do in any object-oriented language. However, the concept of a function in Scala is more general than a method. Scala's other ways to express functions will be explained in the following sections.
+
+### 8.2 LOCAL FUNCTIONS
+
+Programs should be decomposed into many small functions that each do a well-defined task. Individual functions are often quite small. The advantage of
+this style is that it gives a programmer many building blocks that can be flexibly composed to do more
+difficult things. Each building block should be simple enough to be understood individually.
+
+One problem with this approach is that all the helper function names can pollute the program namespace. In the interpreter this is not so much of a problem, but once functions are packaged in reusable classes and objects, it's desirable to hide the helper functions from clients of a class.In Java, your main tool for this purpose is the private method. This private-method approach works in
+Scala as well.
+
+### 8.3 FIRST-CLASS FUNCTIONS
+
+Scala has **first-class** functions. Not only can you define functions and call them, but you can write down functions as unnamed literals and then pass them around as values. A function literal is compiled into a class that when instantiated at runtime is a **function value**.
+
+Example of a function literal that adds one to a number: `(x: Int) => x + 1`. The `=>` designates that this function converts the thing on the left (any integer x) to the thing on the
+right `(x + 1)`.
+
+Function values are objects, so you can store them in variables if you like. yhey are functions, too, so you can invoke them using the usual parentheses function-call notation.
+
+```
+scala> var increase = (x: Int) => x + 1
+increase: Int => Int = <function1>
+scala> increase(10)
+res0: Int = 11
+```
+
+### 8.4 SHORT FORMS OF FUNCTION LITERALS
+
+```
+scala> someNumbers.filter((x) => x > 0)
+res5: List[Int] = List(5, 10)
+```
+
+The Scala compiler knows that x must be an integer, because it sees that you are immediately using the function to filter a list of integers (referred to by `someNumbers`). This is called **target typing** because the targeted usage of an expression (in this case, an argument `tosomeNumbers.filter()`) is allowed to influence the typing of that expression (in this case to determine the type of the x parameter).
+
+### 8.5 PLACEHOLDER SYNTAX
+
+To make a function literal even more concise, you can use **underscores** (`_`) as placeholders for one or more parameters, so long as each parameter appears only one time within the function literal. For example, `_ > 0` is very short notation for a function that checks whether a value is greater than zero: `scala> someNumbers.filter(_ > 0)`
+
+Sometimes when you use underscores as placeholders for parameters, the compiler might not have enough information to infer missing parameter types. For example, suppose you write `_ + _` by itself In such cases, you can specify the types using a colon, like this: `scala> val f = (_: Int) + (_: Int)` 
+
+### 8.6 PARTIALLY APPLIED FUNCTIONS
+
+Although the previous examples substitute underscores in place of individual parameters, you can also replace an entire parameter list with an underscore. For example, rather than writing println(`_`), you could write `println _`. Here's an example: `someNumbers.foreach(println _)`  Scala treats this short form exactly as if you had written the following: `someNumbers.foreach(x => println(x))`. Thus, the underscore in this case is not a placeholder for a single parameter.
+
+When you use an underscore in this way, you are writing a **partially applied function**. A partially applied function is an expression in which you don't supply all of the arguments needed by the function. Instead, you supply some, or none, of the needed arguments. 
+
+```
+scala> val a = sum _
+a: (Int, Int, Int) => Int = <function3>
+```
+
+### 8.7 CLOSURES
+
+```
+scala> var more = 1
+more: Int = 1
+
+scala> val addMore = (x: Int) => x + more
+addMore: Int => Int = <function1>
+
+scala> addMore(10)
+res16: Int = 11
+```
+
+A function literal with no free variables, such as `(x: Int) => x + 1`, is called a **closed term**, where a term is a bit of source code.
+
+But any function literal with free variables, such as `(x: Int) => x + more`, is an **open term**. Therefore, any function value created at runtime from(x: Int) => x + more will, by definition, require that a binding for its free variable, more, be captured.
+
+### 8.8 SPECIAL FUNCTION CALL FORMS
+
+Scala supports repeated parameters, named arguments, and default arguments.
+
+#### Repeated parameters
+
+Scala allows you to indicate that the last parameter to a function may be repeated. This allows clients to pass variable length argument lists to the function. To denote a repeated parameter, place an asterisk after the type of the parameter. For example:
+```
+scala> def echo(args: String*) =
+  for (arg <- args) println(arg)
+echo: (args: String*)Unit
+```
+Defined this way, echo can be called with zero to many String arguments:
+```
+scala> echo()
+scala> echo("one")
+one
+scala> echo("hello", "world!")
+hello
+world!
+```
+
+#### Named arguments
+```
+scala> def speed(distance: Float, time: Float): Float =
+distance / time
+speed: (distance: Float, time: Float)Float
+scala> speed(100, 10)
+res27: Float = 10.0
+``` 
+Named arguments allow you to pass arguments to a function in a different order. The syntax is simply ,that each argument is preceded by a parameter name and an equals sign. For example, the following call to speed is equivalent to speed(100,10):
+```
+scala> speed(time = 10, distance = 100)
+res29: Float = 10.0
+```
+
+#### Default parameter values
+
+Scala lets you specify default values for function parameters.
+```
+def printTime2(out: java.io.PrintStream = Console.out, divisor: Int = 1) = out.println("time = " + System.currentTimeMillis()/divisor)
+```
+### 8.9 TAIL RECURSION
+
+A **tail-recursive** function will not build a new stack frame for each call; all calls will execute in a single frame. This may surprise a programmer inspecting a stack trace of a program that failed. For example, this function calls itself some number of times then throws an exception. 
+```
+def boom(x: Int): Int = 
+  if (x == 0) throw new Exception("boom!") 
+  else boom(x - 1) + 1
+```
+This function is not tail recursive, because it performs an increment operation after the recursive call. You'll get what you expect when you run it:
+```
+scala> boom(3)
+java.lang.Exception: boom!
+at .boom(<console>:5)
+at .boom(<console>:6)
+at .boom(<console>:6)
+at .boom(<console>:6)
+at .<init>(<console>:6)
+```
+If you now modify boom so that it does become tail recursive:
+```
+def bang(x: Int): Int =
+  if (x == 0) throw new Exception("bang!")
+  else bang(x - 1)
+
+scala> bang(5)
+java.lang.Exception: bang!
+at .bang(<console>:5)
+at .<init>(<console>:6) ...
+```
+This time, you see only a single stack frame for bang. You might think that bang crashed before it called itself, but this is not the case.
+
+## Chapter 9: Control Abstraction
+
+### 9.1 REDUCING CODE DUPLICATION
+
+**Higher-order** functions—functions that take functions as parameters—give you extra opportunities to condense and simplify code. One benefit of higher-order functions is they enable you to create control abstractions that allow you to reduce code duplication.
+
+### 9.2 SIMPLIFYING CLIENT CODE
+
+Here's a method that uses this approach to determine whether a passedList contains a negative number:
+```
+def containsNeg(nums: List[Int]): Boolean = {
+  var exists = false
+  for (num <- nums)
+    if (num < 0)
+      exists = true
+  exists
+}
+
+scala> containsNeg(List(1, 2, 3, 4))
+res0: Boolean = false
+scala> containsNeg(List(1, 2, -3, 4))
+res1: Boolean = true
+```
+A more concise way to define the method, though, is by calling the higher-order functionexists on the passed List, like this:
+
+```
+def containsNeg(nums: List[Int]) = nums.exists(_ < 0)
+```
+
+### 9.3 CURRYING
+
+A **curried function** is applied to multiple argument lists, instead of just one. Instead of one list of two Intparameters,
+you apply this function to two lists of one Int parameter each. 
+
+```
+scala> def curriedSum(x: Int)(y: Int) = x + y
+curriedSum: (x: Int)(y: Int)Int
+
+scala> curriedSum(1)(2)
+res5: Int = 3
+
+```
+What's happening here is that when you invoke curriedSum, you actually get two traditional function invocations back to back.
+
+### 9.4 WRITING NEW CONTROL STRUCTURES
+
+Any time you find a control pattern repeated in multiple parts of your code, you should think about implementing it as a new control structure.
+
+## Chapter 15: Case Classes and Pattern Matching
+
+A pattern match includes a sequence of alternatives, each starting with the keyword case. Each alternative includes a pattern and one or more expressions, which will be evaluated if the pattern matches. An arrow symbol => separates the pattern from the expressions.A match expression is evaluated by trying each of the patterns in the order they are written. The first pattern that matches is selected, and the part following the arrow is selected and executed.
+
+Match expressions can be seen as a generalization of Java-style switches. However, there are three differences to keep in mind: 
+- First, match is an expression in Scala (i.e., it always results in a value). 
+- Second, Scala's alternative expressions never "fall through" into the next case. 
+- Third, if none of the patterns match, an exception named MatchError is thrown. This means you always have to make sure that all cases are covered, even if it means adding a default case where there's nothing to do.
+
+```
+expr match {
+  case BinOp(op, left, right) =>
+    println(expr + " is a binary operation")
+  case _ =>
+}
+```
+
+### 15.2 KINDS OF PATTERNS
+The ****wildcard** pattern (_) matches any object whatsoever. You have already seen it used as a default, catch-all alternative. Wildcards can also be used to ignore parts of an object that you do not care about.
+
+A **constant** pattern matches only itself. Any literal may be used as a constant. Any val or singleton object can be used as a constant.
+
+A **variable** pattern matches any object, just like a wildcard. But unlike a wildcard, Scala binds the variable to whatever the object is. You can then use this variable to act on the object further.
+
+A **constructor** pattern looks like `BinOp("+", e, Number(0))`. It consists of a name (BinOp) and then a number of patterns within parentheses: "+", e, and Number(0). Assuming the name designates a case class, such a pattern means to first check that the object is a member of the named case class, and then to check that the constructor parameters of the object match the extra patterns supplied.
+
+You can match against **sequence** types, like List or Array, just like you match against case classes. Use the same syntax, but now you can specify any number of elements within the pattern.
+
+You can match against **tuples** too. A pattern like (a, b, c) matches an arbitrary 3-tuple.
+
+You can use a **typed pattern** as a convenient replacement for type tests and type casts.
+
+```
+def generalSize(x: Any) = x match {
+  case s: String => s.length
+  case m: Map[_, _] => m.size
+  case _ => -1
+}
+```
+
+### 15.3 PATTERN GUARDS
+
+A pattern guard comes after a pattern and starts with an if. The guard can be an arbitrary boolean expression, which typically refers to variables in the pattern. If a pattern guard is present, the match succeeds only if the guard evaluates to true.
 
 
+## Chapter 16 Working with Lists  
+
+Lists are quite similar to arrays, but there are two important differences. First, lists are immutable. That is, elements of a list cannot be changed by assignment. Second, lists have a recursive structure (i.e.,a linked list), whereas arrays are flat.
+
+### 16.2 THE LIST TYPE
+
+Like arrays, lists are homogeneous: the elements of a list all have the same type. The list type in Scala is covariant. This means that for each pair of types S and T, if S is a subtype of T, then List[S] is a subtype of List[T]. For instance, List[String] is a subtype ofList[Object]. This is natural because every list of strings can also be seen as a list of objects.
+
+### 16.3 CONSTRUCTING LISTS
+
+All lists are built from two fundamental building blocks, Nil and :: (pronounced "cons"). Nilrepresents the empty list. The infix operator, ::, expresses list extension at the front.
+
+### 16.4 BASIC OPERATIONS ON LISTS
+
+- `head` - returns the first element of a list
+- `tail` - returns a list consisting of all elements except the first
+- `isEmpty` -  returns true if the list is empty
+
+### 16.5 LIST PATTERNS
+
+Lists can also be taken apart using pattern matching. List patterns correspond one-by-one to list expressions.
+
+### 16.6 FIRST-ORDER METHODS ON CLASS LIST
+
+A method is *****first-order** if it does not take any functions as arguments.
+
+An operation similar to `::` is list concatenation, written `:::`. Unlike `::`, `:::` takes two lists as operands. The result of `xs ::: ys` is a new list that contains all the elements of `xs`, followed by all the elements of `ys`.
 
 
+**Reversing lists: reverse**
+```
+scala> abcde.reverse
+res6: List[Char] = List(e, d, c, b, a)
+```
+
+## Chapter 23 For Expressions Revisited
+
+### 23.1 FOR EXPRESSIONS
+Generally, a for expression is of the form: `for ( seq ) yield expr`
+An example is the for expression: `for (p <- persons; n = p.name; if (n startsWith "To")) yield n`
+
+As mentioned inSection
+7.3 here, you can also enclose the sequence in braces instead of parentheses. Then the semicolons
+become optional:
+```
+for {
+  p <- persons
+  n = p.name
+  if (n startsWith "To")
+} yield n
+```
 
 
-
-
-
-
-
-
-
-
-____
+[//]: # (endof PS )
+---
+---
+---
 
 # Concepts in Programming Languages by Mitchell (CPL)
 
