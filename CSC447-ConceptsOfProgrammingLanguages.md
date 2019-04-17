@@ -1280,6 +1280,87 @@ An operation similar to `::` is list concatenation, written `:::`. Unlike `::`, 
 scala> abcde.reverse
 res6: List[Char] = List(e, d, c, b, a)
 ```
+## Chapter 19 Type Parameterization
+
+Type parameterization allows you to write generic classes and traits. For example, sets are generic and take a type parameter: they are defined as Set[T]. As a result, any particular set instance might be
+a Set[String], a Set[Int], etc., but it must be a set of something. Unlike Java, which allows raw
+types, Scala requires that you specify type parameters. Variance defines inheritance relationships of parameterized types, such as whether a Set[String], for example, is a subtype of Set[AnyRef].
+
+### 19.1 FUNCTIONAL QUEUES
+
+A functional queue is a data structure with three operations:
+1. head - returns the first element of the queue
+2. tail - returns a queue without its first element
+3. enqueue - returns a new queue with a given element appended at the end
+
+Unlike a mutable queue, a functional queue does not change its contents when an element is appended. Instead, a new queue is returned that contains the element. 
+
+```
+scala> val q = Queue(1, 2, 3)
+q: Queue[Int] = Queue(1, 2, 3)
+scala> val q1 = q enqueue 4
+q1: Queue[Int] = Queue(1, 2, 3, 4)
+scala> q
+res0: Queue[Int] = Queue(1, 2, 3)
+```
+Purely functional queues also have some similarity with lists. Both are so called fully persistent data structures, where old versions remain available even after extensions or modifications. Both support head and tail operations. But where a list is usually extended at the front, using a :: operation, a queue is extended at the end, using enqueue.
+
+### 19.2 INFORMATION HIDING
+
+#### Private constructors and factory methods
+
+In Java, you can hide a constructor by making it private. In Scala, the primary constructor does not have an explicit definition; it is defined implicitly by the class parameters and body. Nevertheless, it is still possible to hide the primary constructor by adding a private modifier in front of the class parameter list: `class Queue[T] private (` The private modifier between the class name and its parameters indicates that the constructor of Queue is private: it can be accessed only from within the class itself and its companion object. 
+
+### An alternative: private classes
+Private constructors and private members are one way to hide the initialization and representation of a class. Another more radical way is to hide the class itself and only export a trait that reveals the public interface of the class. 
+
+```
+trait Queue[T] {
+    def head: T
+    def tail: Queue[T]
+    def enqueue(x: T): Queue[T]
+}
+object Queue {
+    def apply[T](xs: T*): Queue[T] =
+        new QueueImpl[T](xs.toList, Nil)
+    ...
+    ...
+ }
+```
+### 19.3 VARIANCE ANNOTATIONS
+
+trait Queue enables you to specify parameterized types, such as Queue[String],Queue[Int], or Queue[AnyRef]: Thus, Queue is a trait and Queue[String] is a type. Queue is also called a type constructor because you can construct a type with it by specifying a type parameter. The type constructor Queue "generates" a family of types, which includes Queue[Int],Queue[String], and Queue[AnyRef].
+
+You can also say that Queue is a generic trait. (Classes and traits that take type parameters are "generic," but the types they generate are "parameterized," not generic.) The term **"generic"** means that you are defining many specific types with one generically written class or trait.
+
+` trait Queue[+T] { ... }` - Prefixing a formal type parameter with a `+` indicates that subtyping is covariant (flexible) in that parameter.
+
+Besides `+`, there is also a prefix `-`, which indicates contravariant subtyping. `trait Queue[-T] { ... }`. Then if T is a subtype of type S, this would imply that Queue[S] is a subtype of Queue[T] (which in the case of queues would be rather surprising!). 
+
+The `+` and `- `symbols you can place next to type parameters are called **variance annotations**.
+
+#### Variance and arrays
+Scala treats arrays as nonvariant (rigid), so an Array[String] is not considered to conform to an Array[Any]. However, sometimes it is necessary to interact with legacy methods in Java that use an Object array as a means to emulate a generic array. 
+
+### 19.4 CHECKING VARIANCE ANNOTATIONS
+#### THE FAST TRACK
+The most important thing to understand is that the Scala compiler will check any variance annotations you place on type parameters. For example, if you try to declare a type parameter to be covariant (by adding a +), but that could lead to potential runtime errors, your program won't compile.
+
+### 19.5 LOWER BOUNDS
+
+You can generalize enqueue by making it polymorphic (i.e., giving the enqueue method itself a type parameter) and using a lower bound for its type
+parameter. 
+
+The new definition gives enqueue a type parameter U, and with the syntax, "U >: T", defines T as the lower bound for U. As a result, U is required to be a supertype of T.[1] The parameter toenqueue is now of type U instead of type T, and the return value of the method is now Queue[U]instead of Queue[T].
+
+### 19.7 OBJECT PRIVATE DATA
+
+OBject private members can be accessed only from within the object in which they are defined. It turns out that accesses to variables from the same object in which they are defined do not cause problems with variance.Scala's variance checking rules contain a special case for object private definitions. Such definitions are omitted when it is checked that a type parameter with either a + or -annotation occurs only in positions that have the same variance classification.
+
+### 19.8 UPPER BOUNDS
+
+An upper bound is specified similar to a lower bound, except instead of the `>:` symbol used for lower bounds, you use a `<:` symbol. With the "T <: Ordered[T]" syntax, you indicate that the type parameter, T, has an upper bound,Ordered[T]. This means that the element type of the list passed to orderedMergeSort must be a subtype of Ordered. 
+
 
 ## Chapter 23 For Expressions Revisited
 
@@ -1297,6 +1378,8 @@ for {
   if (n startsWith "To")
 } yield n
 ```
+
+
 
 
 [//]: # (endof PS )
