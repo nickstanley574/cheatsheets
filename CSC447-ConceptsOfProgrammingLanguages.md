@@ -445,12 +445,182 @@ length (List (1, 2, 3))
 
 ### APPENDING LISTS
 
+`::` Run is constant time b/c connects lists to reference of list. 
+
 List class has builtin method `:::`
 
 ```
 scala> ((1 to 5).toList) ::: ((10 to 15).toList)
 res1: List[Int] = List(1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15)
 ```
+
+#### NOTE: 4/17/2019 1HR HW1 Review.
+
+## Functional Programming 
+
+Type( X => Unit) - argument => return type
+
+
+` forEach (xs, x:Int) => { println(x)}` 
+` for each (xs, println(_))`
+
+Anonymous function: using underscore: 
+
+`val sum1 = (x:Int, y:Int) => x+y`
+`val sum2 = (_:Int) + (_:Int)`
+`val sum2 : (Int, Int) => Int = _ + _`
+
+### Tansforming Elements 
+
+- Create a new list from an old list
+
+## Map on lists
+```
+def map [X, Y] (xs:List[X], f:X=>Y) : List[Y] = {
+  xs match {
+    case Nil  => Nil 
+    case y::ys => f(y) :: map (ys,f)
+  }
+}
+```
+Abstract building a new list, `f` function param, for each element `y` of old list builds an element `f(y)` of new list  
+
+### IDENTITY AND MAP PROPERTIES 
+
+- one cons cell in input => one cons cell in output 
+- input list length = output list length 
+
+```
+identity (1::(2::(3::Nil)))
+--> 1::(identity (2::(3::Nil)))
+--> 1::(2::(identity (3::Nil)))
+--> 1::(2::(3::(identity (Nil))))
+--> 1::(2::(3::(Nil))
+
+map (1::(2::(3::Nil)), f)
+--> f(1)::(map (2::(3::Nil), f))
+--> f(1)::(f(2)::(map (3::Nil, f)))
+--> f(1)::(f(2)::(f(3)::(map (Nil, f))))
+--> f(1)::(f(2)::(f(3)::(Nil)))
+```
+
+### FILTER 
+```
+def filter [X] (xs:List[X], f:X=>Boolean) : List[X] = {
+  xs match {
+    case Nil            => Nil
+    case y::ys if f (y) => y :: filter (ys, f)
+    case _::ys          => filter (ys, f)
+  }
+}
+```
+### SUM TO FOLDLEFT
+
+Using tail recursion (computing forward)
+```
+def sum (xs:List[Int], z:Int = 0) : Int =  xs match {
+  case Nil   => z
+  case y::ys => sum (ys, z + y)
+}
+val xs = List(11,21,31)
+sum (xs)
+
+----
+
+    sum(List(11,21,31),0)     // Fod/Reducation 
+--> sum(List(21,31),11)
+--> sum(List(31), 32)
+--> sum(List(), 63)
+--> 63
+
+```
+### SUM TO FOLDRIGHT
+Using non-tail recursion (computing backward)
+
+### LEFT V RIGHT
+```
+def foldLeft [Z,X] (xs:List[X], z:Z, f:((Z,X)=>Z)) : Z =  xs match {
+  case Nil   => z
+  case y::ys => foldLeft (ys, f(z,y), f)
+}
+def foldRight [X,Z] (xs:List[X], z:Z, f:((X,Z)=>Z)) : Z =  xs match {
+  case Nil   => z
+  case y::ys => f (y, foldRight (ys, z, f))
+}
+``` 
+
+- **foldLeft** is tail recursive: each iteration applies f to the next value and the accumulated result; recursive call is the result
+- **foldRight** is recursive into an argument: each iteration applies f to the next value and the result of recursively folding the rest of the list
+
+```
+foldLeft (xs, z, f) === f( f( f( f(z, a), b), c)) === (z /: xs)(f)
+foldRight(xs, z, f) === f(a, f(b, f(c, z)))       === (xs :\ z)(f) 
+
+
+                    (z /: xs)(f)           (xs :\ z)(f)
+                      f                       f
+                     / \                     / \
+                    f   c                   a   f
+                   / \                         / \
+                  f   b                       b   f
+                 / \                             / \
+                z   a                           c   z
+
+```
+
+
+
+
+
+## FOR EXPRESSIONS
+
+### SET/LIST Comprehensions 
+
+- set comprehensions `{ (m, n) | m ∈ { 0, ..., 10 } ∧ n ∈ { 0, ..., 10 } ∧ m ≤ n }` 
+
+#### Java foreach statement:
+```
+int[] a = new int[]{1,2,3};
+int sum = 0;
+for (int x : xs) sum = sum + x;
+```
+#### Scala foreach expression:
+```
+val xs : List[Int] = List(1,2,3)
+var sum = 0
+for (x <- xs) sum = sum + x // for x drawn-from (<-) xs 
+```
+#### Scala infers type: If xs:List[T] then x:T
+```
+for (x <- xs) e   ===   xs.foreach ((x)=>e)
+```
+#### SCALA: FOR EXPRESSIONS AS MAP
+```
+val xs : List[Int] = List(1,2,3)
+for (x <- xs) yield x*10
+
+for (x <- xs) yield e   ===   xs.map ((x)=>e)
+```
+
+- yield -- don't use a `forEach` use a Map: ` xs . map (x => x+10)`
+`for (x <- xs) yield e   ===   xs.map ((x)=>e)`
+
+### FLATTEN 
+```
+val xss = List(List(1,2,3),List(4,5,6,7),List(8,9),List(10))
+flatten (xss) == (1 to 10).toList
+xss.flatten == (1 to 10).toList // builtin method
+```
+
+And with for expressions using nested iterations:
+```
+(for (xs <- xss; x <- xs) yield x) == (1 to 10).toList
+```
+
+
+
+ 
+
 
 [//]: # (endof lecture notes)
 
