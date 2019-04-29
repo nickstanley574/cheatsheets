@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+        <title>CNS488 Security Testing and Assessment</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+        <link href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css" rel="stylesheet" type="text/css">
+        <style>
+.task-list-item { list-style-type: none; } .task-list-item-checkbox { margin-left: -20px; vertical-align: middle; }
+</style>
+        <style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        
+        <script src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
+    </head>
+    <body>
+        <h1 id="cns488-security-testing-and-assessment">CNS488 Security Testing and Assessment</h1>
+<h1 id="lecture-notes">Lecture Notes</h1>
+<h2 id="welcome-to-cns-388488">Welcome to CNS-388/488</h2>
+<h3 id="definitions">Definitions</h3>
+<ul>
+<li><strong>Threat</strong> - A potential cause of an incident, that may result in harm of systems and organization., An actor that poses risk to your organization and its assets.</li>
+<li><strong>Vulnerability</strong> - A weakness of an asset or group of assets that can be exploited by one or more threats. Requires (1) A existing flaw, (2) Access to the flaw, (3) Capability of an attacker to exploit the flaw.</li>
+<li><strong>Exploit</strong> - Software, code or computer instructions designed to rake advantage of a security flaw.</li>
+<li><code>HACKER (Threat) --&gt; BRUTE FORCE (exploit) --&gt; WEAK PASSWORD (vulnerability)</code></li>
+<li><strong>Advanced Persistent Threats (APT)</strong> - Generally targeted attacks in which the threat has advanced capabilities.  These types of attacks involve a high level of stealth.</li>
+<li><strong>Phishing</strong> - Sending fake emails that look to be from legitimate sources in order to gather information from a victim.</li>
+<li><strong>Trojans</strong> - Malware that is disguised as legitimate software.</li>
+<li><strong>Botnets</strong> - A group of attacker controlled systems used for malicious inten.t (ex: DDoS)</li>
+<li><strong>Ransomware</strong> - Malware that encrypts a victims computer and demands payment for decryption.</li>
+<li><strong>Distributed Denial of Service (DDoS)</strong> - An attack that involves several systems generating enough traffic that the victim is unable to function normally.</li>
+<li><strong>Malware</strong> - A generic term for malicious software.</li>
+<li><strong>Worm</strong> - A self-replicating piece of malware that actively replicates to other systems. (Ex: Wannacry)</li>
+<li><strong>Virus</strong> - A self-replicating piece of malware that requires user intervention to propagate (Ex: USB).</li>
+<li><strong>Antivirus</strong> - is a computer program used to prevent, detect, and remove malware.</li>
+<li><strong>Firewall</strong> - a network security system that monitors and controls incoming and outgoing network traffic based on predetermined security rules.</li>
+<li><strong>Intrusion Detection System (IDS)</strong> - security software designed to automatically alert administrators when someone or something is trying to compromise information system through malicious activities or through security policy violations.</li>
+<li><strong>Web Gateway</strong> - type of security solution that prevents unsecured traffic from entering an internal network of an organization.</li>
+<li><strong>Data Loss Prevention (DLP)</strong>* - set of tools and processes used to ensure that sensitive data is not lost, misused, or accessed by unauthorized users.</li>
+<li><strong>Sandbox</strong> - security mechanism for separating running programs, usually in an effort to mitigate system failures or software vulnerabilities from spreading.</li>
+<li><strong>Security information and event management (SIEM)</strong> - software products and services that  combine security information management and security event management.</li>
+<li><strong>endpoint detection and response (EDR)</strong> - software solutions that collect, record, and store large volumes of data from endpoint activities to provide security professionals with the comprehensive visibility they need to detect, investigate, and mitigate advanced cyber threats.</li>
+<li><strong>User Behavior Analytics (UEBA)</strong> - cybersecurity process about detection of insider threats, targeted attacks, and financial fraud.</li>
+<li><strong>Security Orchestration and Automation (SOAR)</strong> - refers to a method of connecting security tools and integrating disparate security systems. It is the connected layer that streamlines security processes and powers security automation.</li>
+</ul>
+<h3 id="protocols">Protocols</h3>
+<ul>
+<li><strong>FTP (File Transfer Protocol)</strong> - standard network protocol used for the transfer of computer files between a client and server on a computer network.</li>
+<li><strong>FTPS (FTP overSSL)</strong> - adds support for the Transport Layer Security and the Secure Sockets Layer cryptographic protocols.</li>
+<li><strong>SSH (Secure Shell)</strong> - remote management, cryptographic network protocol for operating network services securely over an unsecured network.</li>
+<li><strong>SFTP (Secure File Transfer Protocol)</strong> -  a network protocol used for secure file transfer over secure shell.</li>
+<li><strong>SCP (Secure Copy / copy over SSH)</strong> -  copies files over a secure, encrypted network connection.</li>
+<li><strong>TELENT</strong> - old remote management protocol (precedes SSH)</li>
+<li><strong>DNS (Domain Name System)</strong> -  hierarchical decentralized naming system for computers, services, or other resources connected to the Internet or a private network.</li>
+<li><strong>TFTP (Trivial File Transfer Protocol)</strong> - simple lockstep File Transfer Protocol which allows a client to get a file from or put a file onto a remote host</li>
+<li><strong>HTTP(s) (Hypertext Transfer Protocol (Secure))</strong> - The Hypertext Transfer Protocol is an application protocol for distributed, collaborative, and hypermedia information systems. HTTP is the foundation of data communication for the World Wide Web.Secure is an extension of the Hypertext Transfer Protocol for secure communication over a computer network, and is widely used on the Internet.</li>
+<li><strong>SNMP (Simple Network Management Protocol)</strong> - protocol for collecting and organizing information about managed devices on IP networks and for modifying that information to change device behavior. Devices that typically support SNMP include cable modems, routers, switches, servers, workstations, printers, and more.</li>
+<li><strong>RDP Remote Desktop Protocol)</strong> - Remote Desktop Protocol is a proprietary protocol developed by Microsoft, which provides a user with a graphical interface to connect to another computer over a network connection.</li>
+<li><strong>iSCSl ( Internet Small Computer Systems Interface)</strong> - an Internet Protocol-based storage networking standard for linking data storage facilities.</li>
+<li><strong>IPv4</strong> - Internet Protocol version 4</li>
+<li><strong>IPv6</strong> - Internet Protocol version 6</li>
+<li><strong>ICMP (Internet Control Message Protocol)</strong> - The Internet Control Message Protocol is a supporting protocol in the Internet protocol suite.</li>
+<li><strong>NetBIOS/LLMNR</strong> - windows name resolutions</li>
+<li><strong>SSL/TLS</strong> - encyption layer</li>
+<li><strong>IPsec</strong> - Internet Protocol Security is a secure network protocol suite of IPv4 that authenticates and encrypts the packets of data sent over an IPv4 network.</li>
+</ul>
+<h3 id="ethical-hacking">Ethical Hacking</h3>
+<p><strong>Ethical hacking</strong> – Act in a professional manner, with authorization of the client, and “do no harm”. The purpose of ethical hacking – Use the same tools as the “bad guys” to find issues first (hopefully).</p>
+<p>Types of Hackers:</p>
+<ul>
+<li>Black Hat Hackers: criminals and wrongdoers</li>
+<li>White Hat Hackers: ethical hackers who work to protect systems and people</li>
+<li>Grey Hat Hackers: dabble in both black hat and white hat tinkering</li>
+</ul>
+<p><strong>Security Assessment</strong> – Provides an overview of the overall security posture of an organization</p>
+<p><strong>Vulnerability Assessment</strong> - The process of identifying and quantifying security vulnerabilities in an environment.</p>
+<h4 id="penetration-test">Penetration Test</h4>
+<ul>
+<li>An authorized simulated attack against a target to find and exploit security gaps</li>
+<li>Scope – A large group of IP Addresses and/or domains</li>
+<li>Time –  Short in length (1 – 4 weeks</li>
+<li>Goal – Confirm vulnerabilities, fulfill compliance requirements</li>
+</ul>
+<h4 id="red-team-assessment">Red Team Assessment</h4>
+<ul>
+<li>An authorized simulated attack against a target to find and exploit security gaps</li>
+<li>Scope – Focused on a single objective</li>
+<li>Time – can be short or long term (months)</li>
+<li>Goal – Test People, Processes, and/or Technology</li>
+</ul>
+<h4 id="concept-of-location">Concept of location</h4>
+<ol>
+<li>Remote - Exploits sent across the network, hacker has no access to the system prior to running the exploit</li>
+<li>Local – Exploit run directly on a compromised system, from the compromised system, and with access</li>
+</ol>
+<h4 id="ethical-hacking-phases">Ethical Hacking Phases</h4>
+<ol>
+<li>Reconnaissance - Goal of this phase is to identify targets of interest</li>
+<li>Scanning - Goals of this phase are to determine the parameters of systems of interest</li>
+<li>Gaining Access - Utilizing exploits or targeted solutions against systems and vulnerabilities to gain access</li>
+<li>Maintaining Access - Once compromised, keep access to the system for an extended period of time. Adding backdoors, remote access trojans/tools (RATs), and root kits are a means to maintain access.</li>
+<li>Covering Tracks - clean up don't leave your dirty work.</li>
+</ol>
+<h4 id="types-of-attacks">Types of Attacks</h4>
+<ol>
+<li>Remote Network – i.e. from the internet</li>
+<li>Remote Dial-Up Network – Phone systems, modems, SCADA systems, etc.</li>
+<li>Local Network – Attacks from the local network via Ethernet or WiFi</li>
+<li>Stolen Equipment – Theft of system or resource owned by employees</li>
+<li>Social Engineering – Exploiting people</li>
+<li>Physical Entry – Self explanatory</li>
+</ol>
+<h4 id="ethical-hacking-tests">Ethical Hacking Tests</h4>
+<ol>
+<li>Black Box – No prior knowledge of the network or systems</li>
+<li>White Box – Complete knowledge of the network and systems</li>
+<li>Gray Box – Internal testing which simulates an internal attack against the TOE - OR In addition to active and passive we have:
+<ul>
+<li>Internal– Originate from inside the network or security perimeter, i.e. the “insider”</li>
+<li>External– Originate from outside the network or security perimeter</li>
+<li>Social – Testing people to defeat CIA controls</li>
+<li>Physical – Testing physical security controls</li>
+<li>Wireless – Testing wireless security controls</li>
+</ul>
+</li>
+</ol>
+<h4 id="standards">Standards</h4>
+<ul>
+<li>Penetration Testing Execution Standard</li>
+<li>Open Source Security Testing Methodology Manual (OSSTM)</li>
+</ul>
+<h4 id="ethics-101">Ethics 101</h4>
+<ul>
+<li>Obtain client authorization</li>
+<li>Maintain and follow a non-disclosure agreement (NDA)</li>
+<li>Maintain confidentiality during the engagement</li>
+<li>Not exceed the limits of the engagement</li>
+</ul>
+<h4 id="pentest-timeline">Pentest Timeline</h4>
+<pre><code><div>Initial Client Meeting -&gt; Sign NDA -&gt; Security Evaluation Plan -&gt; Conduct the Test -&gt; Report and Documentation -&gt; Present Report Findings
+</div></code></pre>
+<h2 id="footprinting-recon-and-social-engineering">Footprinting, Recon, and Social Engineering</h2>
+<p>Footprinting is the initial step you will take in a pen test. The depth or amount of footprinting will depending on the type of assessment. It Consists of determining Specific domains, Network addresses or network blocks, Network devices, routers, IDS/IPS and firewalls and Email systems, name servers, web application server, and other publicly facing systems for the target.</p>
+<h3 id="things-to-gather-during-this-footprinting">Things to gather during this Footprinting:</h3>
+<ul>
+<li>Domain names</li>
+<li>Network blocks, services and applications</li>
+<li>Specific IP addresses</li>
+<li>Phone numbers, contact addresses, maps, email addresses</li>
+<li>Related organizations or companies</li>
+<li>Current events, employee postings, job postings, resumes</li>
+<li>System architecture</li>
+<li>IDS/IPS, filters, firewalls, etc.</li>
+<li>Authentication mechanisms</li>
+</ul>
+<h3 id="intel-gathering">Intel Gathering:</h3>
+<ul>
+<li>OSINT – Open-Source Intelligence (passive) - Data collected from publicly available sources</li>
+<li>HUMINT – Human Intelligence (active) - Information gathered from a human</li>
+<li>SIGINT – Signals Intelligence (active) - Information gathered from interception of signals</li>
+</ul>
+<p>Some useful Google commands include (usage is command:term):</p>
+<ul>
+<li><strong>site</strong> – searches for a specific term/phrase on a specific site</li>
+<li><strong>filetype</strong> – searches for a specific term/phrase within a specific filetype</li>
+<li><strong>link</strong> – searches for a specific term/phrase to identify linked pages</li>
+<li><strong>intitle</strong> - searches for a specific term/phrase within the title of a document</li>
+<li><strong>inurl</strong> - searches for a specific term/phrase within the URL</li>
+</ul>
+<h3 id="dnsipemail-recon">DNS/IP/Email Recon</h3>
+<h4 id="dns">DNS</h4>
+<ul>
+<li>Enumerate DNS zones to find systems by name and network address</li>
+<li>Shows the type of internet accessible systems due to naming convention</li>
+</ul>
+<p><strong>DNS record types you should know</strong></p>
+<ul>
+<li>A – host record which maps a name to IP</li>
+<li>SOA – start of authority record which IDs the DNS server which owns the zone</li>
+<li>CNAME – alias for a record (i.e. mapping many names to a single IP)</li>
+<li>MX – mail exchanger record which IDs the mail server and order they should be contacted in</li>
+<li>SRV – services record (_service._proto.name TTL class SRV priority weight port target).  Examples are LDAP and Kerberos in MS AD</li>
+<li>PTR – pointer record maps IPs to names</li>
+<li>NS – name server record IDs the name servers responsible for resolution for the domain</li>
+</ul>
+<h3 id="social-engineering">Social Engineering</h3>
+<p>What is social engineering - The use of non technical methods used to gather information about a target:</p>
+<ul>
+<li>Human-based – person to person contact and using deception and manipulation
+<ul>
+<li>Impersonating employees, end users, or someone of importance</li>
+<li>Calling technical support</li>
+<li>Shoulder surfing/dumpster diving</li>
+</ul>
+</li>
+<li>Computer-based – Using software to retrieve the information
+<ul>
+<li>Email attachments</li>
+<li>Fake websites</li>
+<li>Pop-up windows (not so much anymore)</li>
+</ul>
+</li>
+<li>Other social engineering
+<ul>
+<li>Insider attacks – getting hired by the target or service provider</li>
+<li>Phishing attacks</li>
+<li>Online scams</li>
+<li>URL obfuscation</li>
+</ul>
+</li>
+</ul>
+<h3 id="tor-networks">Tor Networks</h3>
+<ul>
+<li>Allows for anonymous internet usage though the Tor network</li>
+<li>Users of the network install ToR proxy services in order to access the network</li>
+<li>Relays communication through a series of routers which utilize multi-layer encryption (IP of sender and receiver are not both readable at any point in the network)</li>
+</ul>
+<h1 id="book--supplemental-readings">Book &amp; Supplemental Readings</h1>
+<h2 id="hacking-exposed-7-network-security-secrets--solutions">Hacking Exposed 7: Network Security Secrets &amp; Solutions</h2>
+<h3 id="chapter-1-footprinting">CHAPTER 1 FOOTPRINTING</h3>
+<p>The systematic and methodical footprinting of an organization enables attackers to create a near complete profile of an organization’s security posture. Using a combination of tools and techniques, coupled with a healthy dose of patience and mind-melding, attackers can take an unknown entity and reduce it to a specific range of domain names, network blocks, subnets, routers, and individual IP addresses of systems directly connected to the Internet, as well as many other details pertaining to its security posture.</p>
+<p>Footprinting is necessary for one basic reason: it gives you a picture of what the hacker sees. And if you know what the hacker sees, you know what potential security exposures you have in your environment.</p>
+<p>Archived Information - Be aware that there are sites on the Internet where you can retrieve archived copies of information that may no longer be available from the original source. These archives could allow an attacker to gain access to information that has been deliberately removed for security reasons.</p>
+<p>One of the most serious misconfigurations a system administrator can make is allowing untrusted Internet users to perform a DNS zone transfer. A zone transfer allows a secondary master server to update its zone database from the primary master. This provides for redundancy when running DNS, should the primary name server become unavailable. Generally, a DNS zone transfer needs to be performed only by secondary master DNS servers. Many DNS servers, however, are misconfigured and provide a copy of the zone to anyone who asks. This isn’t necessarily bad if the only information provided is related to systems that are connected to the Internet and have valid hostnames, although it makes it that much easier for attackers to find potential targets. The real problem occurs when an organization does not use a public/private DNS mechanism to segregate its external DNS information (which is public) from its internal, private DNS information. In this case, internal hostnames and IP addresses are disclosed to the attacker. Providing internal IP address information to an untrusted user over the Internet is akin to providing a complete blueprint, or roadmap, of an organization’s internal network.</p>
+<p><strong>Traceroute</strong> is a diagnostic tool originally written by Van Jacobson that lets you view the route that an IP packet follows from one host to the next. Traceroute uses the time-to-live (TTL) field in the IP packet to elicit an ICMP TIME_EXCEEDED message from each router. Each router that handles the packet is required to decrement the TTL field. Thus, the TTL field effectively becomes a hop counter. We can use the functionality of traceroute to determine the exact path that our packets are taking. As mentioned previously, traceroute may allow you to discover the network topology employed by the target network, in addition to identifying access control devices (such as an application-based firewall or packet-filtering routers) that may be filtering our traffic.</p>
+<h2 id="supplemental-online">Supplemental Online</h2>
+<h3 id="isaca-%E2%80%93-planning-for-security-testing"><a href="https://www.isaca.org/Journal/archives/2016/volume-5/Documents/Planning-for-Information-Security-Testing_joa_Eng_0916.pdf">ISACA – Planning for Security Testing</a></h3>
+<h4 id="types-of-information-security-testing">types of information security testing:</h4>
+<p>Vulnerability scan—This scan examines the security of individual computers, network devices or applications for known vulnerabilities. Vulnerabilities are identified by running a scanner, sniffers, reviewing configurations, etc.</p>
+<p>Security assessment—This builds upon thevulnerability assessment by adding manual verification of controls to confirm exposure by reviewing settings, policies and procedures</p>
+<p>Penetration test—This happens one step ahead of a vulnerability assessment. It takes advantage of the known and unknown (e.g., zero-day attacks) vulnerabilities. It also makes use of social engineering techniques to exploit the human component of cybersecurity.</p>
+<h4 id="strategy-internal-vs-external">Strategy: Internal vs. External</h4>
+<p>External—This is, perhaps, the most widely-used form of pen-testing. It addresses the ability of a remote attacker to get to the internal network.</p>
+<p>Internal—Contrary to what management usually thinks this is, it is not a strategy applicable to vulnerability assessment work only. Pen-tests can be run internally when the goal is to simulate what would happen if a company’s own employeeattempted to carry out an attack from within or if an attacker managed to gain access to a network.</p>
+<h4 id="pen-test-plan-template">Pen-test Plan Template</h4>
+<ol>
+<li>BACKGROUND</li>
+<li>GOALS
+<ul>
+<li>OBJECTIVES
+<ol>
+<li>SCOPE</li>
+<li>STRATEGY</li>
+<li>TEAMING</li>
+<li>TYPE</li>
+<li>ANALYSIS TECHNIQUE</li>
+<li>SUCCESS FACTORS</li>
+</ol>
+</li>
+<li>OBJECTIVES
+<ol>
+<li>SCOPE</li>
+<li>STRATEGY</li>
+<li>TEAMING</li>
+<li>TYPE</li>
+<li>ANALYSIS TECHNIQUE</li>
+<li>SUCCESS FACTORS</li>
+</ol>
+</li>
+</ul>
+</li>
+<li>SCHEDULE -</li>
+<li>RISK AND CONTINGENCIES</li>
+<li>ASSUMPTIONS</li>
+<li>DELIVERABLES</li>
+<li>CONTACTS</li>
+<li>APPROVALS</li>
+<li>ADDENDUMS</li>
+</ol>
+<h3 id="httpwwwpentest-standardorgindexphpintelligencegathering"><a href="http://www.pentest-standard.org/index.php/Intelligence_Gathering">http://www.pentest-standard.org/index.php/Intelligence_Gathering</a></h3>
+<h2 id="week3-scanning-and-enumeration">Week3 Scanning and Enumeration</h2>
+<p><strong>Scanning and enumeration</strong> the identification of live systems with the taerket's address space and the services that are available.</p>
+<h3 id="scanning-types">Scanning Types</h3>
+<ol>
+<li>Network Scanning - identifes live system on a networ (Ping or ARP sweeps)</li>
+<li>Port Scanning - identifes open ports/services on live systems. (TCP or UDP scans)</li>
+<li>Vulnerability scanning - identifes vulnerabilites in a live service (banner granning)</li>
+</ol>
+<h3 id="scan-options">Scan Options</h3>
+<p><strong>TCP-Connect</strong> -  Completes a full 3-way TCP handshake (SYN, SYN/ACK, ACK)
+<strong>TCP-SYN</strong> - or Half-OpenSends a SYN, waits for a SYN/ACK
+<strong>TCP-FIN</strong> - Sends a FIN, for all ports not listening it should receive a RST (works on Unix)
+<strong>TCP-Xmas</strong> - TreeSends a FIN, URG, and PSH.  The target should respond with a RST for a closed port
+<strong>TCP-NullScan</strong> - with all flags off, RST should be received for all closed ports
+<strong>TCP-ACK Sends</strong> - an ACK, used to map out firewall rules for packet filters
+<strong>TCP-Window</strong> - Uses window sizes to determine if a port is open or filtered/closed (AIX, FreeBSD)
+<strong>Idle</strong> - Uses a spoofed IP, sends a SYN to the target, uses IP Identification field to determine if a port is open or closed
+<strong>UDP</strong> - Sends a UDP packet to a port, waits for ICMP Port Unreachable message (ICMP message type 3, code 3), if received it indicates a closed port.  If no message is received the port “may” be open.  UDP is unreliable due to its connectionless natu</p>
+<h3 id="common-ports">Common Ports</h3>
+<ul>
+<li>MUST KNOW
+<ul>
+<li>TCP/21      FTP</li>
+<li>TCP/23      Telnet</li>
+<li>TCP/25      SMTP</li>
+<li>UDP/53      DNS</li>
+<li>TCP/80      HTTP</li>
+<li>TCP/110     POP3</li>
+<li>TCP/443     HTTPS</li>
+<li>TCP/3389    RDP</li>
+</ul>
+</li>
+<li>SHOULD KNOW
+<ul>
+<li>TCP/UDP/53 DNS</li>
+<li>UDP/67 DHCP Server</li>
+<li>TCP/UDP/88 Kerberos</li>
+<li>TCP/135 Remote Procedure Call (RPC)</li>
+<li>UDP/137 &amp; 138 NetBIOS Datagram Service</li>
+<li>TCP/139 NetBIOS Session Service</li>
+<li>TCP/143 IMAP</li>
+<li>TCP/UDP/389 LDAP Server</li>
+<li>TCP/445 Server Message Block (SMB)</li>
+<li>UDP/500 IPSec ISAKMP</li>
+<li>TCP/UDP/636 LDAP SSL</li>
+<li>TCP/993 IMAP over SSL</li>
+<li>TCP/995 POP3 over SSL</li>
+<li>TCP/3269 &amp; 3268 Global Catalog Server (AD)</li>
+<li>TCP/5985 WinRM (Powershell remoting</li>
+</ul>
+</li>
+</ul>
+<h3 id="ping-sweeps">Ping Sweeps</h3>
+<ul>
+<li>Use of ICMP Echo request, looking for an Echo Reploy</li>
+<li><code>fping</code> - ICMP sweeper for Linux</li>
+<li><code>hping</code> - very versatile tool that can also run TCP ping sweeps</li>
+<li><code>SuperScan</code> - sends ICMP echo, timestame, address mask and info requests in parrallel (Windows)</li>
+<li><code>Nmap</code> - the <code>-sP</code> switch allows nmap to be used as a pring sweeper.</li>
+</ul>
+<h3 id="icmp-types">ICMP Types</h3>
+<ul>
+<li>0     Echo Reply</li>
+<li>3     Desitnation unreacbale</li>
+<li>4     SOurce Quench</li>
+<li>5     Redirct</li>
+<li>8     Echo</li>
+<li>11    Time Exceeded</li>
+<li>12    Parameter Problem</li>
+<li>13    Timestamp</li>
+<li>14    Timestamp Reply</li>
+<li>15    Infomationa request</li>
+<li>16    Infomation reply</li>
+</ul>
+<h4 id="icmp-destination-unreachable-codes">ICMP Destination Unreachable Codes</h4>
+<ul>
+<li>0 net</li>
+<li>1 host</li>
+<li>3 port</li>
+<li>5 network unknown</li>
+<li>6 host unknown</li>
+<li>9/10/13 communcation admin prohibited</li>
+</ul>
+<h3 id="traceroute">Traceroute</h3>
+<p>Send a packet with a TTL of 1, when the router responds with an ICMP time Exceeded message the address reurns in the mssage is the first hope. Do this over and over until you trach the destination, incrementing the TTL by 1 each time. (Windows ICMP, Linux UDP)</p>
+<h3 id="ping-sweep---arp-address-resolution-protocol">Ping Sweep - ARP (Address Resolution Protocol)</h3>
+<p>Arp scanning can be used to identify host on local subnet.</p>
+<h3 id="port-scanning">Port Scanning</h3>
+<p>Port Identification - Following the determination of live or &quot;up&quot; system when we need to klnow what ports and serices are listening.</p>
+<h3 id="null-session">Null Session</h3>
+<p>Null sessions - old issues that may still exist which allows you to connect to Windows system anonyously. Able to gather user accoutns, groups, shares and domain infomration. Relies on open MS RPC prots (File and Printer Sharking) TCP 135,139 and 445.</p>
+<h3 id="banner-grabbing">Banner Grabbing</h3>
+<p>Banner grabbing works well for just about everything else, and netcat is a good tool. Find open ports</p>
+<h3 id="other">Other</h3>
+<ul>
+<li>War Dialing - Tools &quot;sweeps&quot; or dial ranges of phone number to identify modems.</li>
+<li>Passive fingerprinting - we aren't actively sending traffic, just sitting somewhere on the wire (or air) and listenig.</li>
+</ul>
+<h2 id="week-4-windowspasswords">Week 4 Windows/Passwords</h2>
+<p>Vulnerability - A weekness taht can enable an attacker to compromise the security of a resouces. (Can be fixed/patched)</p>
+<p>Exloit - software/code designed to take advantage of securtiy flaw.</p>
+<h3 id="types-of-vulnerabilities">Types of Vulnerabilities</h3>
+<ul>
+<li>Buffer overfllows</li>
+<li>Coss-sire scriptting</li>
+<li>Privilege Escalation</li>
+<li>(Remote) Code Exectation</li>
+<li>Directory Traversal</li>
+<li>Denial-of-service</li>
+<li>Huamn</li>
+</ul>
+<h3 id="resouces">Resouces</h3>
+<ul>
+<li>Exploit Database: The Exploit Database is an archive of public exploits and corresponding vulnerable software, developed for use by penetration testers and vulnerability researchers.</li>
+<li>Vulmon: Vulmon is a vulnerability search engine with vulnerability intelligence features.</li>
+<li>Open Sourced Vulnerability Database  OSVDB: was an independent and open-sourced database.On the 5th April 2016, the database was shut down.</li>
+<li>CAPEC: Used more to grasp attack vectors over specific attacks. Can drill down to specific attack types for summary, attack steps, and remediation techniques.</li>
+<li>CVE (Common Vulnerabilities and Exposures): Gold Standard for tracking (Format of CVE-year-#  Ex: CVE-2008-425)</li>
+<li>NVD: Government run database. Includes descriptions, CVSS risk calculator (more on this later), additional references, and affected versions.</li>
+<li>Microsoft Vulnerabilities: Includes affected versions, descriptions, and workarounds when applicable. (Format: MSyear-#  Ex: MS08-06)</li>
+</ul>
+<h3 id="windows-authentication">Windows Authentication</h3>
+<h4 id="types-of-password-attacks">Types of password attacks:</h4>
+<ul>
+<li>Rainbow Tables: High-storage, Low Processing Time, Offline Only</li>
+<li>Brute Foice : Low -storage, high processing time, on or offline</li>
+<li>Dictonary: High storage, medium processing time, on or offile</li>
+</ul>
+<p>Remote Desktop Services (RDS) - By default the server listens on TCP/3389 (can be changed)</p>
+<h3 id="acounts">Acounts:</h3>
+<pre><code>- User - person
+  - Local and Domain Accounts
+  - Domain accounts are held on the domain controllers and replicated throughout the domain and can be used for authentication against the domain or other systems and applications using AD authentication
+- built-in - system defined at install 
+- service ccount - used to start service but not linked to a person 
+  - Powerful accounts used to start/stop services or interact with other systems
+</code></pre>
+<h3 id="security-identifier-format">Security Identifier Format</h3>
+<ul>
+<li>SID – Security Identifier</li>
+<li>An example: S-1-5-21-1454471165-1336601894-839522115-500
+<ul>
+<li>1 is the revision of the SID</li>
+<li>5 is authority value</li>
+<li>21 and threee sets of values are called sub authority values</li>
+<li>500 is called the RID</li>
+<li>RID 0 Relative Identifer
+<ul>
+<li>Builtin: Guest=501 Administrator=500</li>
+<li>Users start at 1001 and increment</li>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="groups">Groups</h3>
+<ul>
+<li>Groups allow you to add multiple user accounts to a container to apply, or restrict, permissions that the user has on the system or in the domain</li>
+</ul>
+<h3 id="windows-authorization">Windows Authorization</h3>
+<ul>
+<li>The “list” is known as a DACL – Discretionary Access Control List</li>
+<li>SAM
+<ul>
+<li>The SAM in AD is very similar to that of a local system</li>
+<li>The AD SAM holds all AD account information including users, The AD SAM holds all AD account information including users,</li>
+</ul>
+</li>
+</ul>
+<h3 id="hash-types">Hash Types</h3>
+<ul>
+<li>LanMan (LM) hash – older format used for backwards compatibility with legacy systems. Upper case 2 7 char hashes.</li>
+<li>NTLM – newer format which doesn’t have the flaw that LM has</li>
+</ul>
+<h3 id="salt">Salt</h3>
+<ul>
+<li>An unsalted hash is one that simply uses the same key (or the same static value) on every system)</li>
+<li>For example, if we both run Windows XP/7 systems, and both of our passwords are “apple” then the password hash on both systems would be the sam</li>
+<li>A salted password hash is one that uses some other value, in addition to the static value, as a modifier.</li>
+</ul>
+<h3 id="cached-passwords">Cached Passwords</h3>
+<p>If you’re system is a member system of a Microsoft Active Directory domain (drop down in the login) what happens if you’re not connected to the network.</p>
+<p>Yes, we can get them, and since they are salted, no, we cannot just crack them as we would a SAM file password ha</p>
+<h3 id="network-authentication">Network Authentication</h3>
+<p>MS uses LM, Net-NTLMv1, Net-NTLMv2, and Kerberos for network authentication,</p>
+<h3 id="windows-hash-format">Windows Hash Format</h3>
+<p>Account_name:RID:LM_Hash:NTLM_Hash:::</p>
+<h3 id="password-cracking-tools">Password Cracking Tools</h3>
+<ul>
+<li>Cain  – Windows, easy to use GUI, has dictionary/brute-force/hybrid attacks, many algorithms supported.</li>
+<li>John the Ripper -  Windows/*nix, command-line, very fast, good options for word mangling and brute-force, can be patched to support additional algorithms.</li>
+<li>Rainbow Tables/Ophcrack -  time-memory trade off allows pre-computaion of hashes, 99%+ success rate</li>
+<li>hashcat/multiforcer -Windows/*nix, utilizes the GPU in place of the CPU for faster brute-forcing and rainbow table crackin.</li>
+</ul>
+<h3 id="other-1">Other</h3>
+<p>Rainbow tables generate hashes of all plaintext inputs, you store all these hashes in a table, and when you crack you are simply performing a match for the correct hash</p>
+
+    </body>
+    </html>
