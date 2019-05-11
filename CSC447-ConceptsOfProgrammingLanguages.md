@@ -2219,3 +2219,46 @@ The standard solution for maintaining static scope when functions are passed to 
 A block is a region of program text, identified by begin and end markers, that may contain declarations local to this region. 
 
 Parameters passed to functions and procedures are stored in the activation record, just like local variables. The activation record may contain the actual parameter value (in pass-by-value) or its address (in pass-by-reference). Tail calls may be optimized to avoid returning to the calling procedure. 
+
+## Chapter 8: Control in Sequential Languages
+
+### 8.1 STRUCTURED CONTROL
+
+#### 8.1.2 Structured Control
+
+In the 1960s, programmers began to understand that unstructured jumps could make it difficult to understand a program. In modern programming style, we group code in logical blocks, avoid explicit jumps except for function returns, and cannot jump into the middle of a block or function body. 
+
+In 1960 and even 1970, there were many applications in which it was useful to save the cost of a test, even if it meant complicating the control structure of the program. Therefore, programmers considered it important to be able to jump out of the middle of a loop, avoiding another test at the top of the loop.
+
+In the 1980s and 1990s, as computer speed increased, the number of applications in which a small change in efficiency would truly matter decreased significantly, to the point at which, in the 1990s, Java was introduced without any go to statement. 
+
+Simple control structures such as if-then-else have now been in common use since the rise of Pascal in the late 1970s. 
+
+### 8.2 EXCEPTIONS
+
+Exceptions are a basic mechanism that can be used to achieve the following effects: jump out of a block or function invocation, pass data as part of the jump, return to a program point that was set up to continue the computation. Another term for raising an exception is throwing an exception; another term for handling an exception is catching an exception.
+
+### 8.3 CONTINUATIONS
+
+Continuations are a programming technique, based on higher-order functions, that may be used directly by a programmer or may be used in program transformations in an optimizing compiler. Programming with continuations is also related to the systems programming concepts of upcall or callback functions. 
+
+The concept of continuation originated in denotational semantics in the treatments of jumps (goto) and various forms of loop exit and in systems programming in the notion of upcall discussed in Section 7.4. Continuations have found application in continuation-passing-style (CPS) compilers, beginning with the groundbreaking Rabbit compiler for Scheme. 
+
+#### 8.3.2 Continuation-Passing Form and Tail Recursion
+
+There is a program form called continuation-passing form in which each function or operation is passed a continuation. This allows each function or operation to terminate by calling a continuation. As a consequence, no function needs to return to the point from which it was called. This property of continuation-passing form may remind you of tail calls, discussed in Subsection 7.3.4, as a tail call need not return to the calling function.
+
+### 8.4 FUNCTIONS AND EVALUATION ORDER
+
+Exceptions and continuations are forms of jumps that are used in high-level programming languages. A final technique for manipulating the order of execution in programs is to use function definitions and calls. More specifically, if a calculation can be put off until later, it may be placed inside a function and passed to code that will eventually decide when to do the calculation. Delay and force are programming forms that can be used together to optimize program performance. Delay and Force are explicit program constructs in Scheme, but the main idea can be used in any language with functions and static scope. 
+
+### 8.5 CHAPTER SUMMARY
+
+Control and Go to. Because structured programming is commonly accepted and taught, we did not look at the entire historical controversy surrounding go to statements. 
+
+Exceptions. Exceptions are a structured form of jump that may be used to exit a block or function call and pass a return value in the process. 
+
+Continuations. Continuation is a programming technique based on higher-order functions that may be used directly in programming or in program transformations in an optimizing compiler. 
+
+Delay and Force. Delay and Force may be used to delay a computation until it is needed. When the delayed computation is needed, Force is used. Delay and Force may be implemented in conventional programming languages by use of functions: 
+
