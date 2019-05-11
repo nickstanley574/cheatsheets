@@ -1032,6 +1032,76 @@ For example, the expression 2 + 2 * 7 evaluates to 16, not 28, because the * ope
 - (all letters)
 - (all assignment operators)
 
+## Chapter 6 Functional Objects
+
+### 6.1 A SPECIFICATION FOR CLASS RATIONAL
+A rational number is a number that can be expressed as a ratio n/d, where n and d are integers, except that d cannot be zero. n is called the numerator and d the denominator. Examples of rational numbers are 1/2, 2/3, 112/239, and 2/1
+
+### 6.2 CONSTRUCTING A RATIONAL
+
+#### IMMUTABLE OBJECT TRADE-OFFS 
+
+Immutable objects offer several advantages over mutable objects, and one potential disadvantage. First, immutable objects are often easier to reason about than mutable ones, because they do not have complex state spaces that change over time. Second, you can pass immutable objects around quite freely, whereas you may need to make defensive copies of mutable objects before passing them to other code. Third, there is no way for two threads concurrently accessing an immutable to corrupt its state once it has been properly constructed, because no thread can change the state of an immutable. Fourth, immutable objects make safe hash table keys. If a mutable object is mutated after it is placed into a HashSet, for example, that object may not be found the next time you look into the HashSet
+
+The main disadvantage of immutable objects is that they sometimes require that a large object graph be copied, whereas an update could be done in its place. In some cases this can be awkward to express and might also cause a performance bottleneck. 
+
+### 6.3 REIMPLEMENTING THE TOSTRING METHOD
+
+The result of toString is primarily intended to help programmers by providing information that can be used in debug print statements, log messages, test failure reports, and interpreter and debugger output. 
+
+### 6.4 CHECKING PRECONDITIONS
+One of the benefits of object-oriented programming is that it allows you to encapsulate data inside objects so that you can ensure the data is valid throughout its lifetime. In the case of an immutable  object such as Rational, this means that you should ensure the data is valid when the object is constructed. 
+
+### 6.7 AUXILIARY CONSTRUCTORS
+
+Sometimes you need multiple constructors in a class. In Scala, constructors other than the primary constructor are called auxiliary constructors.
+
+Auxiliary constructors in Scala start with def this(...). The body of Rational's auxiliary constructor merely invokes the primary constructor, passing along its lone argument, n, as the numerator and 1 as the denominator. 
+
+```
+class Rational(n: Int, d: Int) {
+
+  require(d != 0)
+
+  val numer: Int = n
+  val denom: Int = d
+
+  def this(n: Int) = this(n, 1) // auxiliary constructor
+
+  override def toString = numer + "/" + denom
+
+  def add(that: Rational): Rational =
+    new Rational(
+      numer * that.denom + that.numer * denom,
+      denom * that.denom
+    )
+ }
+ ```
+
+### 6.9 DEFINING OPERATORS
+
+The current implementation of Rational addition is OK, but could be made more convenient to use. You
+might ask yourself why you can write: `x + y` if x and y are integers or floating-point numbers, but you have to write: `x.add(y)` or at least: `x add y`
+
+The first step is to replace add by the usual mathematical symbol.
+
+```
+def + (that: Rational): Rational =
+  new Rational(
+    numer * that.denom + that.numer * denom,
+    denom * that.denom
+ )
+ ```
+### 6.11 METHOD OVERLOADING
+
+To make Rational even more convenient, we'll add new methods to the class that perform mixed addition and multiplication on rational numbers and integers. 
+
+```
+def + (i: Int): Rational =
+ new Rational(numer + i * denom, denom)
+```
+
+
 ## Chapter 7 Built-in Control Structures
 
 The only control structures are `if`,`while`, `for`, `try`, `match`, and function calls. 
@@ -1371,6 +1441,39 @@ What's happening here is that when you invoke curriedSum, you actually get two t
 
 Any time you find a control pattern repeated in multiple parts of your code, you should think about implementing it as a new control structure.
 
+## Chapter 10: Composition and Inheritance
+
+### 10.3 DEFINING PARAMETERLESS METHODS
+
+The recommended convention is to use a parameterless method whenever there are no parameters and the method accesses mutable state only by reading fields of the containing object (in particular, it does not change mutable state). This convention supports the uniform access principle,[1] which says that client code should not be affected by a decision to implement an attribute as a field or method.
+
+### 10.4 EXTENDING CLASSES
+
+Subtyping means that a value of the subclass can be used wherever a value of the superclass is required. For example:`val e: Element = new ArrayElement(Array("hello"))` Variable `e` is defined to be of type Element, so its initializing value should also be an Element. In fact, the initializing value's type is ArrayElement. This is OK, because class ArrayElement extends class Element, and as a result, the type ArrayElement is compatible with the type Element.
+
+### 10.9 POLYMORPHISM AND DYNAMIC BINDING
+You saw in Section 10.4 that a variable of type Element could refer to an object of typeArrayElement. The name for this phenomenon is polymorphism, which means "many shapes" or "many forms." In this case, Element objects can have many forms.[7]
+
+**Dynamically bound**. This means that the actual method implementation invoked is determined at run time based on the class of the object, not the type of the variable or expression. 
+
+### 10.13 DEFINING A FACTORY OBJECT
+A factory object contains methods that construct other objects. Clients would then use these factory methods to construct objects, rather than constructing the objects directly with new. An advantage of this approach is that object creation can be centralized and the details of how objects are represented with classes can be hidden. This hiding will both make your library simpler for clients to understand, because less detail is exposed, and provide you with more opportunities to change your library's implementation later without breaking client code.
+
+## Chapter 11 Scala's Hierarchy
+
+In Scala, every class inherits from a common superclass named Any. Because every class is a subclass of Any, the methods defined in Any are "universal" methods: they may be invoked on any object. Scala also defines some interesting classes at the bottom of the hierarchy, Null and Nothing, which essentially act as common subclasses. 
+
+### 11.1 SCALA'S CLASS HIERARCHY
+The root class Any has two subclasses: AnyVal and AnyRef. AnyVal is the parent class of value classes in Scala. While you can define your own value classes (see Section 11.4), there are nine value classes built into Scala: Byte, Short, Char, Int, Long, Float, Double, Boolean, and Unit. The first eight of these correspond to Java's primitive types, and their values are represented at run time as Java's primitive values. The instances of these classes are all written as literals in Scala. For example, 42 is an instance of Int, 'x' is an instance of Char, and false an instance ofBoolean. You cannot create instances of these classes using new. This is enforced by the "trick" that value classes are all defined to be both abstract and final.
+
+### 11.2 HOW PRIMITIVES ARE IMPLEMENTED
+
+In fact, Scala stores integers in the same way as Java—as 32-bit words. This is important for efficiency on the JVM and also for interoperability with Java libraries. Class Null is the type of the null reference; it is a subclass of every reference class (i.e., every class that itself inherits from AnyRef). Null is not compatible with value types. 
+
+### 11.3 BOTTOM TYPES
+
+the two classes scala.Null andscala.Nothing. These are special types that handle some "corner cases" of Scala's object-oriented type system in a uniform way
+
 ## Chapter 15: Case Classes and Pattern Matching
 
 A pattern match includes a sequence of alternatives, each starting with the keyword case. Each alternative includes a pattern and one or more expressions, which will be evaluated if the pattern matches. An arrow symbol => separates the pattern from the expressions.A match expression is evaluated by trying each of the patterns in the order they are written. The first pattern that matches is selected, and the part following the arrow is selected and executed.
@@ -1450,6 +1553,42 @@ An operation similar to `::` is list concatenation, written `:::`. Unlike `::`, 
 scala> abcde.reverse
 res6: List[Char] = List(e, d, c, b, a)
 ```
+
+## Chapter 17 Working with Other Collections
+
+### 17.1 SEQUENCES
+Sequence types let you work with groups of data lined up in order. Because the elements are ordered, you can ask for the first element, second element, 103rd element, and so on. 
+
+#### List
+Perhaps the most important sequence type to know about is class List, the immutable linked-list described in detail in the previous chapter. Lists support fast addition and removal of items to the beginning of the list, but they do not provide fast access to arbitrary indexes because the implementation must iterate through the list linearly.
+` scala> val colors = List("red", "blue", "green")`
+
+#### Arrays
+
+Arrays allow you to hold a sequence of elements and efficiently access an element at an arbitrary position, either to get or update the element, with a zero-based index.
+` scala> val fiveInts = new Array[Int](5)` 
+` scala> val fiveToOne = Array(5, 4, 3, 2, 1)` 
+Scala arrays are represented in the same way as Java arrays. So, you can seamlessly use existing Java methods that return arrays.
+
+#### List buffers
+A ListBuffer is a mutable object (contained in package scala.collection.mutable), which can help you build lists more efficiently when you need to append. ListBuffer provides constant time append and prepend operations. You append elements with the += operator, and prepend them with the+=: operator. When you're done building, you can obtain a List by invoking toList on theListBuffer. 
+
+```
+scala> val buf = new ListBuffer[Int]
+scala> buf += 1
+scala> buf += 2
+res5: buf.type = ListBuffer(1, 2)
+scala> 3 +=: buf
+res7: buf.type = ListBuffer(3, 1, 2)
+```
+#### Array buffers
+An ArrayBuffer is like an array, except that you can additionally add and remove elements from the beginning and end of the sequence. All Array operations are available, though they are a little slower due to a layer of wrapping in the implementation.
+
+### 17.2 SETS AND MAPS
+By default when you write "Set" or "Map" you get an immutable object. If you want the mutable variant, you need to do an explicit import. Scala gives you easier access to the immutable variants, as a gentle encouragement to prefer them over their mutable counterparts.
+
+The key characteristic of sets is that they will ensure that at most one of each object, as determined by ==, will be contained in the set at any one time. 
+
 ## Chapter 19 Type Parameterization
 
 Type parameterization allows you to write generic classes and traits. For example, sets are generic and take a type parameter: they are defined as Set[T]. As a result, any particular set instance might be
@@ -1995,9 +2134,88 @@ The difference between parametric polymorphism and overloading is that parametri
 
 We discussed opaque and transparent type declarations. In opaque type declarations, the type name stands for a distinct type different from all other types. In transparent type declarations, the declared name is a synonym for another type. Both forms are used in many programming languages.
 
+## Chapter 7: Scope, Functions, and Storage Management
 
+### 7.1 BLOCK-STRUCTURED LANGUAGES
 
-Bookmark-CLP
+A **block** is a region of program text, identified by begin and end markers, that may contain declarations local to this region.  A variable declared within a block is said to be **local** to that block. A variable declared in an enclosing block is said to be **global** to the block.
 
+### 7.2 IN-LINE BLOCKS
 
+#### 7.2.1 Activation Records and Local Variables
 
+An activation record is also sometimes called a stack frame.
+
+##### Scope and Lifetime
+
+It is important to distinguish the scope of a declaration from the lifetime of a location:
+- Scope: a region of text in which a declaration is visible.
+- Lifetime: the duration, during a run of a program, during which a location is allocated as the result of a specific declaration.
+
+#### 7.2.2 Global Variables and Control Links
+
+Because different activation records have different sizes, operations that push and pop activation records from the run-time stack store a pointer in each activation record to the top of the preceding activation record. The pointer to the top of the previous activation record is called the control link, as it is the link that is followed when control returns to the instructions in the preceding block. 
+
+### 7.3 FUNCTIONS AND PROCEDURES
+
+The difference between a procedure and a function is that a function has a return value but a procedure does not. In most languages, functions and procedures may have side effects. However, a procedure has only side effects; a procedure call is a statement and not an expression. Because functions and procedures have many characteristics in common, we use the terms almost interchangeably in the rest of this chapter. 
+
+#### 7.3.1 Activation Records for Functions
+
+Because a procedure may be called from different call sites, it is also necessary to save the return address, which is the location of the next instruction to execute after the procedure terminates. For functions, the activation record must also contain the location that the calling routine expects to have filled with the return value of the function.
+
+The activation record associated with a function (see Figure 7.4) must contain space for the following information:
+- control link, pointing to the previous activation record on the stack,
+- access link,
+- return address, giving the address of the first instruction to execute when the function terminates,
+- return-result address, the location in which to store the function return value,
+- actual parameters of the function,
+- local variables declared within the function,
+- temporary storage for intermediate results computed with the function executes
+
+#### 7.3.2 Parameter Passing
+
+The parameter names used in a function declaration are called formal parameters. When a function is called, expressions called actual parameters are used to compute the parameter values for that call. 
+
+The difference between pass-by-value and pass-by-reference is important to the programmer in several ways:
+- Side Effects. Assignments inside the function body may have different effects under pass-by-value and pass-by-reference.
+- Aliasing. Aliasing occurs when two names refer to the same object or location. Aliasing may occur when two parameters are passed by reference or one parameter passed by reference has the same location as the global variable of the procedure.
+- Efficiency. Pass-by-value may be inefficient for large structures if the value of the large structure must be copied. Pass-by-reference may be less efficient than pass-by-value for small structures that would fit directly on stack, because when parameters are passed by reference we must dereference a pointer to get their value.
+
+#### 7.3.3 Global Variables (First-Order Case)
+
+There are two main rules for finding the declaration of a global identifier:
+- Static Scope: A global identifier refers to the identifier with that name that is declared in the closest enclosing scope of the program text.
+- Dynamic Scope: A global identifier refers to the identifier associated with the most recent activation record.
+
+One important difference between static and dynamic scope is that finding a declaration under static scope uses the static(unchanging) relationship between blocks in the program text. In contrast, dynamic scope uses the actual sequence ofcalls that are executed in the dynamic (changing) execution of the program.
+
+##### Access Links are Used to Maintain Static Scope
+The access link of an activation record points to the activation record of the closest enclosing block in the program. In-line blocks do not need an access link, as the closest enclosing block will be the most recently entered block - for in-line blocks, the control link points to the closest enclosing block. 
+
+To summarize, the control link is a link to the activation record of the previous(calling) block. The access link is a link to the activation record of the closest enclosing block in program text. The control link depends on the dynamic behavior of program whereas the access link depends on only the static form of the program text. Access links are used to find the location of global variables in statically scoped languages with nested blocks at run time.
+
+### 7.4 Tail Recursion as Iteration
+
+When a tail recursive function is compiled, it is possible to generate code that computes the function value by use of an iterative loop. When this optimization is used, tail recursive functions can be evaluated by only one activation record for a first call and all resulting recursive calls, not one additional activation record per recursive call. 
+
+### 7.4 HIGHER-ORDER FUNCTIONS
+
+#### 7.4.1 First-Class Functions
+
+A language has first-class functions if functions can be
+- declared within any scope,
+- passed as arguments to other functions, and
+- returned as results of functions.
+
+#### 7.4.2 Passing Functions to Functions
+
+#### Use of Closures 
+
+The standard solution for maintaining static scope when functions are passed to functions or returned as results is to use a data structure called a closure. A closure is a pair consisting of a pointer to function code and a pointer to an mactivation record. Because each activation record contains an access link pointing to the record for the closest enclosing scope, a pointer to the scope in which a function is declared also provides links to activation records for enclosing blocks.
+
+### 7.5 CHAPTER SUMMARY
+
+A block is a region of program text, identified by begin and end markers, that may contain declarations local to this region. 
+
+Parameters passed to functions and procedures are stored in the activation record, just like local variables. The activation record may contain the actual parameter value (in pass-by-value) or its address (in pass-by-reference). Tail calls may be optimized to avoid returning to the calling procedure. 
