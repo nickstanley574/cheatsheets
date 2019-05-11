@@ -617,9 +617,157 @@ And with for expressions using nested iterations:
 (for (xs <- xss; x <- xs) yield x) == (1 to 10).toList
 ```
 
+## Topic -- SCOPE AND LIFETIME
+
+**Scope of an identifier - region of text in which it may be used**
+
+free occurrence has no matching binding - `y = 5*x;   // Free occurrences of x and y`
+binding occurrence declares the identifier - `int y;    // binding occurrence of y` 
+bound occurrence follows matching declaration - 
+```
+int y;    // Binding occurrence of y
+int x;    // Binding occurrence of x
+
+x=6;      // Bound occurrence of x
+y = 5*x;  // Bound occurrences of x and y
+```
+
+**Lifetime of an area of memory - duration during which it is allocated**
+
+**Activation records:** storage space for local variables / intermediate values that the runtime system generates also known as stack frames, 
+
+### TYPICAL STORAGE OPTIONS
+
+- global (static) - available for lifetime of program 
+- in AR in call stack (stack-allocated) available whilst function active  (called but not returned)
+- in heap (heap-allocated) available until deallocated (manually or via garbage collection)
+
+### STORAGE LIFETIME ISSUES
+
+Lifetime too short - reads return other value, writes overwrite other value, resource state incorrect, e.g., file handle closed, can cause security problems
+
+Lifetime too long - uses too much memory (memory leak)
+
+### MULTIPLE THREADS
+
+Each thread needs a separate call stack
+
+## Topic - NESTED CLASSES
+
+### JAVA GUI
+
+Implementation invoked when button pressed, etc. Implementation usually refers to other objects
+
+### IMPLEMENTING NESTED CLASSES
+
+- Java compiler supports nested classes
+- JVM does not support nested classes!
+- Java compiler eliminates nested classes
+- Creates new classes with reserved $ in name
+
+## Topic -- CLOSURES
+
+### IMPLEMENTATION: CLOSURES
+
+- Closures store inner function and environment
+- Environment contains variables from enclosing scope
+- Lifetime of environment = lifetime of inner function environment is allocated on the heap
+
+Closure contains pointer/reference to code for inner AND a copy of x
+
+```
+def outer (x:A) : B=>C = {
+  def inner (y:B) : C = {
+    ...use x and y...
+  }
+  inner
+}
+```
+- The closure is an instance of the second class
 
 
- 
+### SCALA IMPLEMENTATION
+
+```
+object Closure {
+  def outer (x:Int) : Boolean=>Int = {
+    def inner (y:Boolean) : Int = {
+      x + (if (y) 0 else 1)
+    }
+    inner
+  }
+}
+```
+
+## Topic -- L-VALUES
+
+### R-MODE AND L-MODE
+
+Consider: `x = x + 1;` 
+
+Right-hand x denotes value read from storage location
+
+Left-hand x denotes the storage location (address)
+
+### L-VALUES
+
+Expression for which l-mode evaluation succeed Effectively, has an address
+
+### NOT L-VALUES
+
+L-mode evaluation sometimes disallowed In C: 
+```
+int x = 5;
+int y = 6;
+int *p = &(x + y); // not allowed
+(x + y) = 7;       // not allowed
+```
+(x + y) not an l-value
+
+
+
+## Topic -- ARGUMENT PASSING
+
+```
+def f (x:String, y:Int) = x * y
+f ("hello", 10)
+```
+- x, y - formal parameters (or parameters)
+- "hello", 10 - actual parameters (or arguments)
+
+### CALL-BY-VALUE (CBV)
+
+Most PLs use call-by-value (CBV) by default
+**To run g (e)**
+1. evaluate e to a value v
+2. pass a copy of v to g
+3. callee changes to copy of v not visible to caller
+
+### CALL-BY-VALUE EXAMPLE
+
+**For g(x+1) with x = 5** 
+1. x+1 evaluates to 6
+2. a location containing 6 is given to g
+3. location could be memory or a register
+
+**For g(x) with x = 5**
+1. x evaluates to 5
+2. a location containing 5 is given to g
+3. location is different to that of x!
+
+### CALL-BY-REFERENCE (CBR)
+
+**To run g (e)**
+1. evaluate e to an l-value r
+2. pass the l-value r to g
+3. callee changes via r are visible to caller
+
+### CALL-BY-REFERENCE EXAMPLE
+**For g(x) with x = 5** 
+1. x evaluates to the location of x
+2. that location (of x) is given to g
+3. g has an alias of x
+4. writing to the alias is visible to caller
 
 
 [//]: # (endof lecture notes)
