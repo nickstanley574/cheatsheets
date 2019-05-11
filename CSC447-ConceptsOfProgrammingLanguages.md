@@ -1688,6 +1688,76 @@ for {
 } yield n
 ```
 
+## Chapter 26 Extractors
+
+This chapter explains what extractors are and how you can use them to define patterns that are decoupled from an object's representation.
+
+### 26.2 EXTRACTORS
+
+An extractor in Scala is an object that has a method called unapply as one of its members. The purpose of that unapply method is to match a value and take it apart. Often, the extractor object also defines a dual method apply for building values, but this is not required. A
+
+```
+ object EMail {
+
+    // The injection method (optional)
+    def apply(user: String, domain: String) = user + "@" + domain
+
+    // The extraction method (mandatory)
+    def unapply(str: String): Option[(String, String)] = {
+        val parts = str split "@"
+        if (parts.length == 2) Some(parts(0), parts(1)) else None
+    }
+}
+ ```
+ 
+ ### 26.3 PATTERNS WITH ZERO OR ONE VARIABLES
+ 
+The case where a pattern binds just one variable is treated differently, however. There is no one-tuple in . Scala. To return just one pattern element, the unapply method simply wraps the element itself in a Some. 
+
+It's also possible that an extractor pattern does not bind any variables. In that case the
+corresponding unapply method returns a boolean—true for success and false for failure. For instance,
+the extractor object shown in Listing 26.3 characterizes strings consisting of all uppercase characters:
+```
+object UpperCase {
+    def unapply(s: String): Boolean = s.toUpperCase == s
+}
+```
+
+### 26.4 VARIABLE ARGUMENT EXTRACTORS
+
+Scala lets you define a different extraction method specifically for vararg matching. This method is called unapplySeq.
+
+### 26.7 REGULAR EXPRESSIONS
+
+Scala inherits its regular expression syntax from Java, which in turn inherits most of the features of Perl.
+
+If a regular expression contains many backslashes this might be a bit painful to write and to read. Scala's raw strings provide an alternative. A raw string is a sequence of characters between triple quotes. 
+`scala> val Decimal = new Regex("""(-)?(\d+)(\.\d*)?""")` 
+
+## Chapter 31 Combining Scala and Java
+
+### 31.1 USING SCALA FROM JAVA
+
+Java has no exact equivalent to a singleton object, but it does have static methods. The Scala translation of singleton objects uses a combination of static and instance methods. For every Scala singleton object, the compiler will create a Java class for the object with a dollar sign added to the end. For a singleton object named App, the compiler produces a Java class namedApp$. This class has all the methods and fields of the Scala singleton object. 
+
+### 31.2 ANNOTATIONS
+Several annotations cause the compiler to emit extra information when targeting the Java platform. When the compiler sees such an annotation, it first processes it according to the general Scala rules, and then it does something extra for Java.
+
+#### Deprecation 
+For any method or class marked @deprecated, the compiler will add Java's own deprecation annotation to the emitted code. Because of this, Java compilers can issue deprecation warnings when Java code accesses deprecated Scala methods.
+
+#### Exceptions thrown
+Scala does not check that thrown exceptions are caught. That is, Scala has no equivalent to Java's throws declarations on methods. All Scala methods are translated to Java methods that declare no thrown exceptions
+
+The reason this feature is omitted from Scala is that the Java experience with it has not been purely positive. Because annotating methods with throws clauses is a heavy burden, too many developers write code that swallows and drops exceptions, just to get the code to compile without adding all those throws clauses. They may intend to improve the exception handling later, but experience shows that all too often time-pressed programmers will never come back and add proper exception handling. The twisted result is that this well-intentioned feature often ends up making code less reliable. A large amount of production Java code swallows and hides runtime exceptions, and the reason it does so is to satisfy the compiler. 
+
+### 31.3 WILDCARD TYPES
+
+Wildcard types are written using placeholder syntax, just like the short-hand function literals described in Section 8.5. In the short hand for function literals, you can use an underscore `(_)` in place of an expression; for example, `(_ + 1)` is the same as `(x => x + 1)`. Wildcard types use the same idea, only for types instead of expressions. If you write Iterator`[_]`, then the underscore is replacing a type. Such a type represents an Iterator where the element type is not known.
+
+### 31.4 COMPILING SCALA AND JAVA TOGETHER
+
+Scala allows compiling against Java source code as well as Java class files. All you have to do is put the Java source files on the command line as if they were Scala files. The Scala compiler won't compile those Java files, but it will scan them to see what they contain. To use this facility, you first compile the Scala code using Java source files, and then compile the Java code using Scala class files.
 
 
 
