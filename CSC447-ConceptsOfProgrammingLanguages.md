@@ -617,9 +617,157 @@ And with for expressions using nested iterations:
 (for (xs <- xss; x <- xs) yield x) == (1 to 10).toList
 ```
 
+## Topic -- SCOPE AND LIFETIME
+
+**Scope of an identifier - region of text in which it may be used**
+
+free occurrence has no matching binding - `y = 5*x;   // Free occurrences of x and y`
+binding occurrence declares the identifier - `int y;    // binding occurrence of y` 
+bound occurrence follows matching declaration - 
+```
+int y;    // Binding occurrence of y
+int x;    // Binding occurrence of x
+
+x=6;      // Bound occurrence of x
+y = 5*x;  // Bound occurrences of x and y
+```
+
+**Lifetime of an area of memory - duration during which it is allocated**
+
+**Activation records:** storage space for local variables / intermediate values that the runtime system generates also known as stack frames, 
+
+### TYPICAL STORAGE OPTIONS
+
+- global (static) - available for lifetime of program 
+- in AR in call stack (stack-allocated) available whilst function active  (called but not returned)
+- in heap (heap-allocated) available until deallocated (manually or via garbage collection)
+
+### STORAGE LIFETIME ISSUES
+
+Lifetime too short - reads return other value, writes overwrite other value, resource state incorrect, e.g., file handle closed, can cause security problems
+
+Lifetime too long - uses too much memory (memory leak)
+
+### MULTIPLE THREADS
+
+Each thread needs a separate call stack
+
+## Topic - NESTED CLASSES
+
+### JAVA GUI
+
+Implementation invoked when button pressed, etc. Implementation usually refers to other objects
+
+### IMPLEMENTING NESTED CLASSES
+
+- Java compiler supports nested classes
+- JVM does not support nested classes!
+- Java compiler eliminates nested classes
+- Creates new classes with reserved $ in name
+
+## Topic -- CLOSURES
+
+### IMPLEMENTATION: CLOSURES
+
+- Closures store inner function and environment
+- Environment contains variables from enclosing scope
+- Lifetime of environment = lifetime of inner function environment is allocated on the heap
+
+Closure contains pointer/reference to code for inner AND a copy of x
+
+```
+def outer (x:A) : B=>C = {
+  def inner (y:B) : C = {
+    ...use x and y...
+  }
+  inner
+}
+```
+- The closure is an instance of the second class
 
 
- 
+### SCALA IMPLEMENTATION
+
+```
+object Closure {
+  def outer (x:Int) : Boolean=>Int = {
+    def inner (y:Boolean) : Int = {
+      x + (if (y) 0 else 1)
+    }
+    inner
+  }
+}
+```
+
+## Topic -- L-VALUES
+
+### R-MODE AND L-MODE
+
+Consider: `x = x + 1;` 
+
+Right-hand x denotes value read from storage location
+
+Left-hand x denotes the storage location (address)
+
+### L-VALUES
+
+Expression for which l-mode evaluation succeed Effectively, has an address
+
+### NOT L-VALUES
+
+L-mode evaluation sometimes disallowed In C: 
+```
+int x = 5;
+int y = 6;
+int *p = &(x + y); // not allowed
+(x + y) = 7;       // not allowed
+```
+(x + y) not an l-value
+
+
+
+## Topic -- ARGUMENT PASSING
+
+```
+def f (x:String, y:Int) = x * y
+f ("hello", 10)
+```
+- x, y - formal parameters (or parameters)
+- "hello", 10 - actual parameters (or arguments)
+
+### CALL-BY-VALUE (CBV)
+
+Most PLs use call-by-value (CBV) by default
+**To run g (e)**
+1. evaluate e to a value v
+2. pass a copy of v to g
+3. callee changes to copy of v not visible to caller
+
+### CALL-BY-VALUE EXAMPLE
+
+**For g(x+1) with x = 5** 
+1. x+1 evaluates to 6
+2. a location containing 6 is given to g
+3. location could be memory or a register
+
+**For g(x) with x = 5**
+1. x evaluates to 5
+2. a location containing 5 is given to g
+3. location is different to that of x!
+
+### CALL-BY-REFERENCE (CBR)
+
+**To run g (e)**
+1. evaluate e to an l-value r
+2. pass the l-value r to g
+3. callee changes via r are visible to caller
+
+### CALL-BY-REFERENCE EXAMPLE
+**For g(x) with x = 5** 
+1. x evaluates to the location of x
+2. that location (of x) is given to g
+3. g has an alias of x
+4. writing to the alias is visible to caller
 
 
 [//]: # (endof lecture notes)
@@ -1688,6 +1836,76 @@ for {
 } yield n
 ```
 
+## Chapter 26 Extractors
+
+This chapter explains what extractors are and how you can use them to define patterns that are decoupled from an object's representation.
+
+### 26.2 EXTRACTORS
+
+An extractor in Scala is an object that has a method called unapply as one of its members. The purpose of that unapply method is to match a value and take it apart. Often, the extractor object also defines a dual method apply for building values, but this is not required. A
+
+```
+ object EMail {
+
+    // The injection method (optional)
+    def apply(user: String, domain: String) = user + "@" + domain
+
+    // The extraction method (mandatory)
+    def unapply(str: String): Option[(String, String)] = {
+        val parts = str split "@"
+        if (parts.length == 2) Some(parts(0), parts(1)) else None
+    }
+}
+ ```
+ 
+ ### 26.3 PATTERNS WITH ZERO OR ONE VARIABLES
+ 
+The case where a pattern binds just one variable is treated differently, however. There is no one-tuple in . Scala. To return just one pattern element, the unapply method simply wraps the element itself in a Some. 
+
+It's also possible that an extractor pattern does not bind any variables. In that case the
+corresponding unapply method returns a boolean—true for success and false for failure. For instance,
+the extractor object shown in Listing 26.3 characterizes strings consisting of all uppercase characters:
+```
+object UpperCase {
+    def unapply(s: String): Boolean = s.toUpperCase == s
+}
+```
+
+### 26.4 VARIABLE ARGUMENT EXTRACTORS
+
+Scala lets you define a different extraction method specifically for vararg matching. This method is called unapplySeq.
+
+### 26.7 REGULAR EXPRESSIONS
+
+Scala inherits its regular expression syntax from Java, which in turn inherits most of the features of Perl.
+
+If a regular expression contains many backslashes this might be a bit painful to write and to read. Scala's raw strings provide an alternative. A raw string is a sequence of characters between triple quotes. 
+`scala> val Decimal = new Regex("""(-)?(\d+)(\.\d*)?""")` 
+
+## Chapter 31 Combining Scala and Java
+
+### 31.1 USING SCALA FROM JAVA
+
+Java has no exact equivalent to a singleton object, but it does have static methods. The Scala translation of singleton objects uses a combination of static and instance methods. For every Scala singleton object, the compiler will create a Java class for the object with a dollar sign added to the end. For a singleton object named App, the compiler produces a Java class namedApp$. This class has all the methods and fields of the Scala singleton object. 
+
+### 31.2 ANNOTATIONS
+Several annotations cause the compiler to emit extra information when targeting the Java platform. When the compiler sees such an annotation, it first processes it according to the general Scala rules, and then it does something extra for Java.
+
+#### Deprecation 
+For any method or class marked @deprecated, the compiler will add Java's own deprecation annotation to the emitted code. Because of this, Java compilers can issue deprecation warnings when Java code accesses deprecated Scala methods.
+
+#### Exceptions thrown
+Scala does not check that thrown exceptions are caught. That is, Scala has no equivalent to Java's throws declarations on methods. All Scala methods are translated to Java methods that declare no thrown exceptions
+
+The reason this feature is omitted from Scala is that the Java experience with it has not been purely positive. Because annotating methods with throws clauses is a heavy burden, too many developers write code that swallows and drops exceptions, just to get the code to compile without adding all those throws clauses. They may intend to improve the exception handling later, but experience shows that all too often time-pressed programmers will never come back and add proper exception handling. The twisted result is that this well-intentioned feature often ends up making code less reliable. A large amount of production Java code swallows and hides runtime exceptions, and the reason it does so is to satisfy the compiler. 
+
+### 31.3 WILDCARD TYPES
+
+Wildcard types are written using placeholder syntax, just like the short-hand function literals described in Section 8.5. In the short hand for function literals, you can use an underscore `(_)` in place of an expression; for example, `(_ + 1)` is the same as `(x => x + 1)`. Wildcard types use the same idea, only for types instead of expressions. If you write Iterator`[_]`, then the underscore is replacing a type. Such a type represents an Iterator where the element type is not known.
+
+### 31.4 COMPILING SCALA AND JAVA TOGETHER
+
+Scala allows compiling against Java source code as well as Java class files. All you have to do is put the Java source files on the command line as if they were Scala files. The Scala compiler won't compile those Java files, but it will scan them to see what they contain. To use this facility, you first compile the Scala code using Java source files, and then compile the Java code using Scala class files.
 
 
 
@@ -2219,3 +2437,46 @@ The standard solution for maintaining static scope when functions are passed to 
 A block is a region of program text, identified by begin and end markers, that may contain declarations local to this region. 
 
 Parameters passed to functions and procedures are stored in the activation record, just like local variables. The activation record may contain the actual parameter value (in pass-by-value) or its address (in pass-by-reference). Tail calls may be optimized to avoid returning to the calling procedure. 
+
+## Chapter 8: Control in Sequential Languages
+
+### 8.1 STRUCTURED CONTROL
+
+#### 8.1.2 Structured Control
+
+In the 1960s, programmers began to understand that unstructured jumps could make it difficult to understand a program. In modern programming style, we group code in logical blocks, avoid explicit jumps except for function returns, and cannot jump into the middle of a block or function body. 
+
+In 1960 and even 1970, there were many applications in which it was useful to save the cost of a test, even if it meant complicating the control structure of the program. Therefore, programmers considered it important to be able to jump out of the middle of a loop, avoiding another test at the top of the loop.
+
+In the 1980s and 1990s, as computer speed increased, the number of applications in which a small change in efficiency would truly matter decreased significantly, to the point at which, in the 1990s, Java was introduced without any go to statement. 
+
+Simple control structures such as if-then-else have now been in common use since the rise of Pascal in the late 1970s. 
+
+### 8.2 EXCEPTIONS
+
+Exceptions are a basic mechanism that can be used to achieve the following effects: jump out of a block or function invocation, pass data as part of the jump, return to a program point that was set up to continue the computation. Another term for raising an exception is throwing an exception; another term for handling an exception is catching an exception.
+
+### 8.3 CONTINUATIONS
+
+Continuations are a programming technique, based on higher-order functions, that may be used directly by a programmer or may be used in program transformations in an optimizing compiler. Programming with continuations is also related to the systems programming concepts of upcall or callback functions. 
+
+The concept of continuation originated in denotational semantics in the treatments of jumps (goto) and various forms of loop exit and in systems programming in the notion of upcall discussed in Section 7.4. Continuations have found application in continuation-passing-style (CPS) compilers, beginning with the groundbreaking Rabbit compiler for Scheme. 
+
+#### 8.3.2 Continuation-Passing Form and Tail Recursion
+
+There is a program form called continuation-passing form in which each function or operation is passed a continuation. This allows each function or operation to terminate by calling a continuation. As a consequence, no function needs to return to the point from which it was called. This property of continuation-passing form may remind you of tail calls, discussed in Subsection 7.3.4, as a tail call need not return to the calling function.
+
+### 8.4 FUNCTIONS AND EVALUATION ORDER
+
+Exceptions and continuations are forms of jumps that are used in high-level programming languages. A final technique for manipulating the order of execution in programs is to use function definitions and calls. More specifically, if a calculation can be put off until later, it may be placed inside a function and passed to code that will eventually decide when to do the calculation. Delay and force are programming forms that can be used together to optimize program performance. Delay and Force are explicit program constructs in Scheme, but the main idea can be used in any language with functions and static scope. 
+
+### 8.5 CHAPTER SUMMARY
+
+Control and Go to. Because structured programming is commonly accepted and taught, we did not look at the entire historical controversy surrounding go to statements. 
+
+Exceptions. Exceptions are a structured form of jump that may be used to exit a block or function call and pass a return value in the process. 
+
+Continuations. Continuation is a programming technique based on higher-order functions that may be used directly in programming or in program transformations in an optimizing compiler. 
+
+Delay and Force. Delay and Force may be used to delay a computation until it is needed. When the delayed computation is needed, Force is used. Delay and Force may be implemented in conventional programming languages by use of functions: 
+
