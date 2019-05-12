@@ -248,3 +248,196 @@ Internal—Contrary to what management usually thinks this is, it is not a strat
     
 ### http://www.pentest-standard.org/index.php/Intelligence_Gathering 
 
+## Week3 Scanning and Enumeration
+
+**Scanning and enumeration** the identification of live systems with the taerket's address space and the services that are available. 
+
+### Scanning Types 
+1. Network Scanning - identifes live system on a networ (Ping or ARP sweeps)
+2. Port Scanning - identifes open ports/services on live systems. (TCP or UDP scans)
+3. Vulnerability scanning - identifes vulnerabilites in a live service (banner granning)
+
+### Scan Options
+**TCP-Connect** -  Completes a full 3-way TCP handshake (SYN, SYN/ACK, ACK)
+**TCP-SYN** - or Half-OpenSends a SYN, waits for a SYN/ACK
+**TCP-FIN** - Sends a FIN, for all ports not listening it should receive a RST (works on Unix)
+**TCP-Xmas** - TreeSends a FIN, URG, and PSH.  The target should respond with a RST for a closed port
+**TCP-NullScan** - with all flags off, RST should be received for all closed ports
+**TCP-ACK Sends** - an ACK, used to map out firewall rules for packet filters
+**TCP-Window** - Uses window sizes to determine if a port is open or filtered/closed (AIX, FreeBSD)
+**Idle** - Uses a spoofed IP, sends a SYN to the target, uses IP Identification field to determine if a port is open or closed
+**UDP** - Sends a UDP packet to a port, waits for ICMP Port Unreachable message (ICMP message type 3, code 3), if received it indicates a closed port.  If no message is received the port “may” be open.  UDP is unreliable due to its connectionless natu
+
+
+### Common Ports 
+
+- MUST KNOW 
+  - TCP/21      FTP
+  - TCP/23      Telnet
+  - TCP/25      SMTP
+  - UDP/53      DNS
+  - TCP/80      HTTP
+  - TCP/110     POP3
+  - TCP/443     HTTPS
+  - TCP/3389    RDP
+- SHOULD KNOW
+  - TCP/UDP/53 DNS 
+  - UDP/67 DHCP Server
+  - TCP/UDP/88 Kerberos
+  - TCP/135 Remote Procedure Call (RPC)
+  - UDP/137 & 138 NetBIOS Datagram Service
+  - TCP/139 NetBIOS Session Service
+  - TCP/143 IMAP
+  - TCP/UDP/389 LDAP Server
+  - TCP/445 Server Message Block (SMB)
+  - UDP/500 IPSec ISAKMP
+  - TCP/UDP/636 LDAP SSL
+  - TCP/993 IMAP over SSL
+  - TCP/995 POP3 over SSL
+  - TCP/3269 & 3268 Global Catalog Server (AD)
+  - TCP/5985 WinRM (Powershell remoting
+
+
+### Ping Sweeps 
+- Use of ICMP Echo request, looking for an Echo Reploy 
+- `fping` - ICMP sweeper for Linux 
+- `hping` - very versatile tool that can also run TCP ping sweeps
+- `SuperScan` - sends ICMP echo, timestame, address mask and info requests in parrallel (Windows)
+- `Nmap` - the `-sP` switch allows nmap to be used as a pring sweeper. 
+
+### ICMP Types 
+- 0     Echo Reply
+- 3     Desitnation unreacbale 
+- 4     SOurce Quench 
+- 5     Redirct 
+- 8     Echo
+- 11    Time Exceeded 
+- 12    Parameter Problem 
+- 13    Timestamp
+- 14    Timestamp Reply
+- 15    Infomationa request 
+- 16    Infomation reply 
+  
+#### ICMP Destination Unreachable Codes
+
+- 0 net 
+- 1 host
+- 3 port 
+- 5 network unknown 
+- 6 host unknown 
+- 9/10/13 communcation admin prohibited 
+
+### Traceroute
+
+Send a packet with a TTL of 1, when the router responds with an ICMP time Exceeded message the address reurns in the mssage is the first hope. Do this over and over until you trach the destination, incrementing the TTL by 1 each time. (Windows ICMP, Linux UDP)
+
+### Ping Sweep - ARP (Address Resolution Protocol)
+Arp scanning can be used to identify host on local subnet. 
+
+### Port Scanning
+
+Port Identification - Following the determination of live or "up" system when we need to klnow what ports and serices are listening. 
+
+### Null Session 
+
+Null sessions - old issues that may still exist which allows you to connect to Windows system anonyously. Able to gather user accoutns, groups, shares and domain infomration. Relies on open MS RPC prots (File and Printer Sharking) TCP 135,139 and 445. 
+
+### Banner Grabbing 
+
+Banner grabbing works well for just about everything else, and netcat is a good tool. Find open ports 
+
+### Other 
+- War Dialing - Tools "sweeps" or dial ranges of phone number to identify modems. 
+- Passive fingerprinting - we aren't actively sending traffic, just sitting somewhere on the wire (or air) and listenig. 
+
+## Week 4 Windows/Passwords 
+
+Vulnerability - A weekness taht can enable an attacker to compromise the security of a resouces. (Can be fixed/patched)
+
+Exloit - software/code designed to take advantage of securtiy flaw. 
+
+### Types of Vulnerabilities 
+- Buffer overfllows 
+-  Coss-sire scriptting 
+-  Privilege Escalation 
+-  (Remote) Code Exectation 
+-  Directory Traversal 
+-  Denial-of-service 
+-  Huamn 
+
+### Resouces 
+- Exploit Database: The Exploit Database is an archive of public exploits and corresponding vulnerable software, developed for use by penetration testers and vulnerability researchers.
+- Vulmon: Vulmon is a vulnerability search engine with vulnerability intelligence features.
+- Open Sourced Vulnerability Database  OSVDB: was an independent and open-sourced database.On the 5th April 2016, the database was shut down.
+- CAPEC: Used more to grasp attack vectors over specific attacks. Can drill down to specific attack types for summary, attack steps, and remediation techniques.
+- CVE (Common Vulnerabilities and Exposures): Gold Standard for tracking (Format of CVE-year-#  Ex: CVE-2008-425)
+- NVD: Government run database. Includes descriptions, CVSS risk calculator (more on this later), additional references, and affected versions.
+- Microsoft Vulnerabilities: Includes affected versions, descriptions, and workarounds when applicable. (Format: MSyear-#  Ex: MS08-06)
+
+### Windows Authentication
+
+#### Types of password attacks:
+- Rainbow Tables: High-storage, Low Processing Time, Offline Only 
+- Brute Foice : Low -storage, high processing time, on or offline 
+- Dictonary: High storage, medium processing time, on or offile 
+
+Remote Desktop Services (RDS) - By default the server listens on TCP/3389 (can be changed)
+
+### Acounts: 
+    - User - person
+      - Local and Domain Accounts
+      - Domain accounts are held on the domain controllers and replicated throughout the domain and can be used for authentication against the domain or other systems and applications using AD authentication
+    - built-in - system defined at install 
+    - service ccount - used to start service but not linked to a person 
+      - Powerful accounts used to start/stop services or interact with other systems
+
+### Security Identifier Format
+- SID – Security Identifier
+- An example: S-1-5-21-1454471165-1336601894-839522115-500
+  - 1 is the revision of the SID 
+  - 5 is authority value 
+  - 21 and threee sets of values are called sub authority values
+  - 500 is called the RID 
+  - RID 0 Relative Identifer 
+    - Builtin: Guest=501 Administrator=500
+    - Users start at 1001 and increment
+    - 
+### Groups
+- Groups allow you to add multiple user accounts to a container to apply, or restrict, permissions that the user has on the system or in the domain
+
+### Windows Authorization
+- The “list” is known as a DACL – Discretionary Access Control List
+- SAM
+  - The SAM in AD is very similar to that of a local system
+  - The AD SAM holds all AD account information including users, The AD SAM holds all AD account information including users, 
+
+### Hash Types
+- LanMan (LM) hash – older format used for backwards compatibility with legacy systems. Upper case 2 7 char hashes.
+- NTLM – newer format which doesn’t have the flaw that LM has 
+
+### Salt
+- An unsalted hash is one that simply uses the same key (or the same static value) on every system)
+- For example, if we both run Windows XP/7 systems, and both of our passwords are “apple” then the password hash on both systems would be the sam
+- A salted password hash is one that uses some other value, in addition to the static value, as a modifier. 
+
+
+### Cached Passwords
+If you’re system is a member system of a Microsoft Active Directory domain (drop down in the login) what happens if you’re not connected to the network. 
+
+Yes, we can get them, and since they are salted, no, we cannot just crack them as we would a SAM file password ha
+
+### Network Authentication
+MS uses LM, Net-NTLMv1, Net-NTLMv2, and Kerberos for network authentication, 
+
+### Windows Hash Format
+Account_name:RID:LM_Hash:NTLM_Hash:::
+
+### Password Cracking Tools
+- Cain  – Windows, easy to use GUI, has dictionary/brute-force/hybrid attacks, many algorithms supported.
+- John the Ripper -  Windows/*nix, command-line, very fast, good options for word mangling and brute-force, can be patched to support additional algorithms.
+- Rainbow Tables/Ophcrack -  time-memory trade off allows pre-computaion of hashes, 99%+ success rate
+- hashcat/multiforcer -Windows/*nix, utilizes the GPU in place of the CPU for faster brute-forcing and rainbow table crackin. 
+
+### Other 
+
+Rainbow tables generate hashes of all plaintext inputs, you store all these hashes in a table, and when you crack you are simply performing a match for the correct hash
